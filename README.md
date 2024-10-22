@@ -1,12 +1,12 @@
 # Measured-vs-simulated-PV
 
 This repository has been created based on the work presented in the article: [ADD DOI]
-The aim of this repository is to facilate data sharing regarding measured PV profiles and comparison between measured and simulated PV energy production data.
+The aim of this repository is to facilate the data sharing of measured PV profiles and compare measured and simulated PV power production data.
 The README also explains how to use the measured and simulated PV data for e-fuel techno-economic assessments. 
 
 This repository contains:
 - Measured data from real photovoltaic (PV) plants
-- Python scripts for extracting PV energy production data from PVGIS and Renewable Ninja
+- Python scripts for extracting PV energy production data from PVGIS and Renewables.ninja
 - Python scripts for data analysis, graphs, and error analysis
 
 ##Installation guide
@@ -38,7 +38,7 @@ Easy to use: You can run the code line by line and see the output immediately.
 Great for exploration: If you're analyzing data or working with output interactively, Jupyter is ideal.
 Supports visualization: If you ever need to plot graphs or inspect your data, it's straightforward to integrate visualization libraries like matplotlib.
 
-## Option 2: Visual Studio Code (VS Code) (more advanced
+### Option 2: Visual Studio Code (VS Code) (more advanced
 Step-by-Step Setup
 
 Install Python:
