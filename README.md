@@ -1,14 +1,6 @@
 # Measured-vs-simulated-PV
 This repository contains measured data from real photovoltaic (PV) plants, along with Python scripts for extracting PV energy production data from PVGIS and Renewable Ninja. It also includes Python scripts for data analysis, graph creation, and error analysis, facilitating a comparison between measured and simulated PV energy production data.
 
-# Table of Contents
-Input File Structure
-Installation
-Usage
-APIs Used
-Obtaining the Renewable Ninja API Token
-Output
-License
 
 # Input File Structure
 The input file should be an Excel file named input_datasheet.xlsx with a sheet named datasheet. Each row in this sheet should represent an individual solar installation and provide details necessary to query both the PVGIS and Renewable Ninja APIs. Here’s a breakdown of the columns required:
@@ -29,16 +21,71 @@ fixed	Indicator of whether the panels are fixed (1) or use tracking (0).
 tracking	Tracking type for panels that are not fixed (e.g., single-axis).
 Ensure that all required columns are present for proper execution.
 
-# Installation
-To run the project, you will need to install the following Python libraries:
+# Python installation (if you already use Python skip this chapter)
+## Option 1: Jupyter Notebook (easier for beginners)
+
+Step-by-Step Setup
+Install Python:
+First, download and install Python from the official website: Python Downloads. Be sure to check the box that says "Add Python to PATH" during the installation.
+Install Jupyter Notebook:
+Open a terminal or command prompt and install Jupyter Notebook using pip:
+
+pip install notebook
+
+Install Required Libraries:
+After Jupyter Notebook is installed, install the required libraries (pandas, requests, openpyxl):
+pip install pandas requests openpyxl
+
+Run Jupyter Notebook:
+Open a terminal and run:
+jupyter notebook
+A browser window will open with the Jupyter interface. You can create a new Python notebook, copy the script into a cell, and run the script step by step.
+
+Pros of Using Jupyter:
+Easy to use: You can run the code line by line and see the output immediately.
+Great for exploration: If you're analyzing data or working with output interactively, Jupyter is ideal.
+Supports visualization: If you ever need to plot graphs or inspect your data, it's straightforward to integrate visualization libraries like matplotlib.
+
+## Option 2: Visual Studio Code (VS Code) (more advanced
+Step-by-Step Setup
+
+Install Python:
+
+First, download and install Python from the official website: Python Downloads. Make sure to check "Add Python to PATH" during the installation.
+Install Visual Studio Code (VS Code):
+
+Download and install Visual Studio Code from: VS Code Download.
+Install Python Extension in VS Code:
+
+Once VS Code is installed, open it, and go to the Extensions Marketplace (you can find it on the left sidebar).
+Search for "Python" and install the official Python extension provided by Microsoft.
+Install Required Libraries:
+
+Open the terminal inside VS Code by clicking Terminal > New Terminal.
+Run the following command to install the required libraries:
+
+pip install pandas requests openpyxl
+Create or Open the Python Script:
+
+You can now either create a new Python file (with a .py extension) or open the existing script in VS Code.
+Once the script is open, you can run the script by pressing F5 or selecting Run > Run Without Debugging.
+
+Pros of Using VS Code:
+Great for coding: If you're writing and editing Python code, VS Code provides many helpful features like code autocompletion, debugging tools, and syntax highlighting.
+Integrated Terminal: You can run your Python scripts within the editor without needing to switch to another terminal window.
+Extensibility: VS Code supports many extensions that make development easier (e.g., Git integration, Docker support).
+
+
+# Library required
+
+To run the project in your environemnt, you will need to install the following Python libraries:
 
 pandas: For reading/writing Excel files and data manipulation.
 requests: For making API calls to PVGIS and Renewable Ninja.
 openpyxl: To handle Excel files when using pandas.
 You can install these libraries using pip:
 
-bash
-Copia codice
+
 pip install pandas requests openpyxl
 Usage
 Once you've cloned the repository and installed the required libraries, follow these steps:
