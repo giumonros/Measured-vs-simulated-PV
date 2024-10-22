@@ -48,7 +48,7 @@ for index, row in df.iterrows():
                 if response.status_code == 200:
                     data = pd.read_csv(io.StringIO(response.text), skiprows=10)
                     data = data[:-7]  # Assuming data format requires removing the last 7 rows
-                    productions.setdefault(identifier, []).extend(data["P"].astype(float).values)
+                    productions.setdefault(identifier, []).extend((data["P"].astype(float)/1000).values)
                 else:
                     print(f"Failed to retrieve data for {identifier}")
             except Exception as e:
