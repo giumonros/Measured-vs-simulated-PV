@@ -1,30 +1,22 @@
 # Measured-vs-simulated-PV
-This repository contains measured data from real photovoltaic (PV) plants, along with Python scripts for extracting PV energy production data from PVGIS and Renewable Ninja. It also includes Python scripts for data analysis, graph creation, and error analysis, facilitating a comparison between measured and simulated PV energy production data.
 
+This repository has been created based on the work presented in the article: [ADD DOI]
+The aim of this repository is to facilate data sharing regarding measured PV profiles and comparison between measured and simulated PV energy production data.
+The README also explains how to use the measured and simulated PV data for e-fuel techno-economic assessments. 
 
-# Input File Structure
-The input file should be an Excel file named input_datasheet.xlsx with a sheet named datasheet. Each row in this sheet should represent an individual solar installation and provide details necessary to query both the PVGIS and Renewable Ninja APIs. Here’s a breakdown of the columns required:
+This repository contains:
+- Measured data from real photovoltaic (PV) plants
+- Python scripts for extracting PV energy production data from PVGIS and Renewable Ninja
+- Python scripts for data analysis, graphs, and error analysis
 
-Column Name	Description
-cod	A unique code for each solar installation (e.g., 'SOL123').
-latitude	Latitude of the solar installation (in decimal degrees).
-longitude	Longitude of the solar installation (in decimal degrees).
-azimuth	Azimuth angle of the solar panels.
-tilt	Tilt angle of the solar panels.
-peakpower_kW	Installed peak power of the solar system (in kW).
-loss	System losses (as a percentage).
-pv_technology	Type of photovoltaic technology (e.g., 'crystalline').
-building/free	Indicates whether the panels are on a building (building) or free (free).
-startyear	The year when data collection should start.
-endyear	The year when data collection should end.
-fixed	Indicator of whether the panels are fixed (1) or use tracking (0).
-tracking	Tracking type for panels that are not fixed (e.g., single-axis).
-Ensure that all required columns are present for proper execution.
+##Installation guide
 
-# Python installation (if you already use Python skip this chapter)
-## Option 1: Jupyter Notebook (easier for beginners)
+This tool requires the use Python. We propose here two options to us it (if you already have Python installed you can skip):
+- Option 1: Jupyter Notebook (easier for beginners)
+- Option 2: Visual Studio Code (VS Code)
 
-Step-by-Step Setup
+### Option 1: Jupyter Notebook
+
 Install Python:
 First, download and install Python from the official website: Python Downloads. Be sure to check the box that says "Add Python to PATH" during the installation.
 Install Jupyter Notebook:
@@ -93,6 +85,27 @@ Once you've cloned the repository and installed the required libraries, follow t
 Prepare the input file: Ensure that the file input_datasheet.xlsx is in the root folder of the project, and it conforms to the structure defined above.
 
 Set up Renewable Ninja API token: Before running the script, you need to obtain a Renewable Ninja API token (see Obtaining the Renewable Ninja API Token). Replace the rn_token variable in the script with your token.
+
+
+## Input File Structure
+The input file should be an Excel file named input_datasheet.xlsx with a sheet named datasheet. Each row in this sheet should represent an individual solar installation and provide details necessary to query both the PVGIS and Renewable Ninja APIs. Here’s a breakdown of the columns required:
+
+Column Name	Description
+cod	A unique code for each solar installation (e.g., 'SOL123').
+latitude	Latitude of the solar installation (in decimal degrees).
+longitude	Longitude of the solar installation (in decimal degrees).
+azimuth	Azimuth angle of the solar panels.
+tilt	Tilt angle of the solar panels.
+peakpower_kW	Installed peak power of the solar system (in kW).
+loss	System losses (as a percentage).
+pv_technology	Type of photovoltaic technology (e.g., 'crystalline').
+building/free	Indicates whether the panels are on a building (building) or free (free).
+startyear	The year when data collection should start.
+endyear	The year when data collection should end.
+fixed	Indicator of whether the panels are fixed (1) or use tracking (0).
+tracking	Tracking type for panels that are not fixed (e.g., single-axis).
+Ensure that all required columns are present for proper execution.
+
 
 # Run the script:
 
