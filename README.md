@@ -9,7 +9,19 @@ This repository contains:
 - Python scripts for extracting PV power production data from PVGIS and Renewables.ninja
 - Python scripts for data analysis, graphs, and error analysis
 
-## Installation guide
+## Sharing PV measured data
+
+If you have high resolution PV **power** measurement data that you can make public, you can share it here!
+We do not need the time series with all the data points but **only the hourly aggregated values**. 
+Higher resolution data can be shared but only two days are enough (one cloudy day and one sunny day).
+
+To share your PV power data, please follow these steps:
+1- Download the ``input_datasheet.xlsx`` file and fill up the information regarding your PV plant.
+2- Normalize your PV power time series based on the maximum PV plant capacity (all values should be between 0 and 1)
+3- 
+
+ 
+## Installation guide for the PV time series analysis tool
 
 1- Download the "Measured-vs-simulated-PV" ZIP folder: go to the green 'Code' button on this page, and click on 'Download ZIP'. Unzip the folder. 
 If you are familiar with GitHub you can also Fork this repository. 
@@ -23,10 +35,10 @@ If you are familiar with GitHub you can also Fork this repository.
 5- Open the terminal inside VS Code by clicking Terminal > New Terminal. Run the following command to install the required libraries:
 
 ``` bash
-pip install pandas requests openpyxl
+pip install pandas requests openpyxl matplotlib
 ```
 
-## Extracting PV power production data from simulation tools 
+## Extracting PV power production data from simulation tools
 
 1- Open the ``input_datasheet.xlsx`` file and fill in the required informations
 
@@ -39,7 +51,10 @@ pip install pandas requests openpyxl
 
 4- Paste your token in front of the rn_token variable: ``rn_token = 'your_token_here'``
 
-4- You can now run the script by clicking on the small arrow on the top right of the VS Code window.
+5- You can now run the script by clicking on the small arrow on the top right of the VS Code window.
+
+More infos: https://code.visualstudio.com/docs/python/run
+https://code.visualstudio.com/docs/datascience/jupyter-notebooks 
 
 The script will read the data from the ``input_datasheet.xlsx`` file, fetch solar production data from the PVGIS and Renewable Ninja APIs for each installation and consolidate the data into a structured output saved as Consolidated_Hourly_Production.xlsx.
 This file will contain hourly production data across all the specified years and databases.
