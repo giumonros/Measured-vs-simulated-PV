@@ -90,6 +90,7 @@ for index, row in df.iterrows():
 for key, value in productions.items():
     productions[key] = pd.Series(value)
 output_df = pd.DataFrame(productions)
+output_df.index += 1 #Start first line at 1 instead of 0
 
 # Desired order for databases
 database_order = ['RN-MERRA2', 'RN-SARAH', 'PG-SARAH', 'PG-SARAH2', 'PG-ERA5']
@@ -124,7 +125,7 @@ multi_index = pd.MultiIndex.from_tuples(new_columns, names=["", "Locations", "Pr
 output_df.columns = multi_index
 
 # Save the DataFrame to an Excel file
-output_file = "PV_DATA_meas_sim.xlsx"
-output_df.to_excel(output_file, index=True)  # Make sure to set index=False if not using DataFrame index
+output_file = "PV_DATA_meas_sim.csv"
+output_df.to_csv(output_file)  # Make sure to set index=False if not using DataFrame index
 
 print("Simulated PV data excel sheet successfully generated!")
