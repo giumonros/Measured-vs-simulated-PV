@@ -31,10 +31,9 @@ pip install pandas requests openpyxl
 1- Open the ``input_datasheet.xlsx`` file and fill in the required informations
 
 2- To generate profiles with [Renewables.ninja](https://www.renewables.ninja/), you have to set up a Renewable Ninja API token:
-	(a) Visit Renewables.ninja's [registration page](https://www.renewables.ninja/register) and create an account
-	(b) Once logged in go to your profile page(https://www.renewables.ninja/profile) to generate your API token.
-	(c) Copy your API token 
-	(d) Remember to credit Renewables.ninja appropriately in your work (see [here](https://www.renewables.ninja/documentation/science) for references)
+- Visit Renewables.ninja's [registration page](https://www.renewables.ninja/register) and create an account
+- Once logged in go to your profile page(https://www.renewables.ninja/profile) to generate your API token.
+- Copy your API token 
 
 3- Open the script called [NAME] in VS Code and paste your token in front of the rn_token variable: ``rn_token = 'your_token_here'``
 
@@ -51,3 +50,5 @@ API Documentation: https://re.jrc.ec.europa.eu/pvg_tools/en/tools.html#PVP
 
 Renewable Ninja API: Renewable Ninja provides simulation data for solar and wind energy production at any location worldwide.
 API Documentation: https://www.renewables.ninja/api
+
+Remember to credit Renewables.ninja and PVGIS appropriately in your work :)
