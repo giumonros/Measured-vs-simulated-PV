@@ -35,9 +35,11 @@ pip install pandas requests openpyxl
 - Once logged in go to your profile page(https://www.renewables.ninja/profile) to generate your API token.
 - Copy your API token 
 
-3- Open the script called [NAME] in VS Code and paste your token in front of the rn_token variable: ``rn_token = 'your_token_here'``
+3- Open the script called [NAME] in VS Code (File > Open folder > Measured-vs-simulated-PV folder and click on the script)
 
-4- You can now run the script by pressing F5 or selecting Run > Run Without Debugging.
+4- Paste your token in front of the rn_token variable: ``rn_token = 'your_token_here'``
+
+4- You can now run the script by clicking on the small arrow on the top right of the VS Code window.
 
 The script will read the data from the ``input_datasheet.xlsx`` file, fetch solar production data from the PVGIS and Renewable Ninja APIs for each installation and consolidate the data into a structured output saved as Consolidated_Hourly_Production.xlsx.
 This file will contain hourly production data across all the specified years and databases.
