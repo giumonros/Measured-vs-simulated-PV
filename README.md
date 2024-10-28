@@ -30,15 +30,20 @@ If you are familiar with GitHub you can also Fork this repository.
 
 3- Download and install the code editor [VSCode](https://code.visualstudio.com/). Make sure to select the "Add to PATH" option when installing. 
 
-4- Add the *Python* extension in the code editor (in "Extensions marketplace" on the left sidebar).
+4- Add the *Python* and *Jupyter* extensions in the code editor (in "Extensions marketplace" on the left sidebar).
 
-5- Open the terminal inside VS Code by clicking Terminal > New Terminal. Run the following command to install the required libraries:
+5- Open the unzipped folder "Measured-vs-simulated-PV": File > Open folder > "Measured-vs-simulated-PV folder"
+
+6- Open the terminal inside VS Code by clicking Terminal > New Terminal. Run the following command to install the required libraries:
 
 ``` bash
-pip install pandas requests openpyxl matplotlib
+pip install -r requirements.txt
 ```
 
-## Extracting PV power production data from simulation tools
+## Extracting simulated PV power production data and drawing graphs
+
+The script will read the data from the ``input_datasheet.xlsx`` file, fetch solar production data from the PVGIS and Renewable Ninja APIs for each installation and consolidate the data into a structured output saved as PV_DATA_sim.csv
+This file will contain hourly production data across all the specified years and databases. Then the script adds the measured PV data from the corresponding measurements sites and show the data in PV_DATA_meas_sim.csv
 
 1- Open the ``input_datasheet.xlsx`` file and fill in the required informations
 
@@ -47,17 +52,14 @@ pip install pandas requests openpyxl matplotlib
 - Once logged in go to your profile page(https://www.renewables.ninja/profile) to generate your API token.
 - Copy your API token 
 
-3- Open the script called [NAME] in VS Code (File > Open folder > Measured-vs-simulated-PV folder and click on the script)
+3- In VS Code, from the file explorer (left side bar), click on the ``PV_Analysis.ipynb`` script to open it
 
-4- Paste your token in front of the rn_token variable: ``rn_token = 'your_token_here'``
+4- In the code, paste your token in front of the rn_token variable: ``rn_token = 'your_token_here'``
 
-5- You can now run the script by clicking on the small arrow on the top right of the VS Code window.
+5- You can now run the script by clicking on the small arrow on the top right of the VS Code window. Select ".venv" as a Kernel (upper right-hand corner of your notebook). 
+More infos about Jupyter Notebooks [here](https://code.visualstudio.com/docs/datascience/jupyter-notebooks) and Kernels [here]((https://code.visualstudio.com/docs/datascience/jupyter-kernel-management)
 
-More infos: https://code.visualstudio.com/docs/python/run
-https://code.visualstudio.com/docs/datascience/jupyter-notebooks 
 
-The script will read the data from the ``input_datasheet.xlsx`` file, fetch solar production data from the PVGIS and Renewable Ninja APIs for each installation and consolidate the data into a structured output saved as Consolidated_Hourly_Production.xlsx.
-This file will contain hourly production data across all the specified years and databases.
 
 ## APIs Used and documentation
 This project integrates with two APIs to gather solar production data:
