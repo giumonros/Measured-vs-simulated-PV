@@ -32,9 +32,20 @@ If you are familiar with GitHub you can also Fork this repository.
 
 4- Add the *Python* and *Jupyter* extensions in the code editor (in "Extensions marketplace" on the left sidebar).
 
-5- Open the unzipped folder "Measured-vs-simulated-PV": File > Open folder > "Measured-vs-simulated-PV folder"
+5- Open the unzipped folder "Measured-vs-simulated-PV" in VS Code: File > Open folder > "Measured-vs-simulated-PV folder"
 
-6- Open the terminal inside VS Code by clicking Terminal > New Terminal. Run the following command to install the required libraries:
+6- Open the terminal inside VS Code by clicking Terminal > New Terminal. Run the following command to create an environment ``venv``:
+
+``` bash
+python -m venv venv
+```
+7- Activate the environment writting in the terminal
+
+``` bash
+venv\Scripts\Activate.ps1
+```
+
+8- Install the required libraries in this environment writting in the terminal:
 
 ``` bash
 pip install -r requirements.txt
