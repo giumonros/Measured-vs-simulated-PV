@@ -3,9 +3,10 @@ import pandas as pd
 import requests
 import io
 import time
+#To run this script: fill up/check the "input_datasheet.xlsx" file and put your Renewables.ninja token (more infos in the README)
 
 # Load the Excel file
-file_path = "input_datasheet.xlsx"
+file_path = "input_datasheet.xlsx" #In this file fill the required data for the sites where you would like to extract data
 sheet_name = "datasheet"
 df = pd.read_excel(file_path, sheet_name=sheet_name)
 
@@ -52,7 +53,7 @@ for index, row in df.iterrows():
                 else:
                     print(f"Data not available in PVGIS for {identifier}")
             except Exception as e:
-                print(f"Error retrieving PVGIS data for {identifier}: {e}")
+                print(f"Data not available in PVGIS for {identifier}: {e}")
 
     # Renewable Ninja Data Retrieval
     for db in rn_databases:
@@ -80,10 +81,10 @@ for index, row in df.iterrows():
                     break
                 elif response.status_code == 429:
                     retry_after = int(response.headers.get('Retry-After', 3600))
-                    print(f"Rate limit hit for Renewable Ninja. Pausing for {retry_after} seconds.")
+                    print(f"Rate limit hit for Renewables.Ninja. Pausing for {retry_after} seconds.")
                     time.sleep(retry_after)
                 else:
-                    print(f"Data not available in Renewable Ninja data for {identifier}: {response.text}")
+                    print(f"Data not available in Renewables.Ninja for {identifier}: {response.text}")
                     break
 
 # Convert all lists to pandas Series and create a DataFrame
@@ -124,8 +125,11 @@ multi_index = pd.MultiIndex.from_tuples(new_columns, names=["", "Locations", "Pr
 # Assign this MultiIndex to the DataFrame
 output_df.columns = multi_index
 
-# Save the DataFrame to an Excel file
-output_file = "PV_DATA_meas_sim.csv"
-output_df.to_csv(output_file)  # Make sure to set index=False if not using DataFrame index
+#Remove values after 8760 hours
 
-print("Simulated PV data excel sheet successfully generated!")
+
+# Save the DataFrame to an Excel file
+output_file = "PV_DATA_sim.csv"
+output_df.to_csv(output_file)  
+
+print("Simulated PV data csv file successfully generated!")
