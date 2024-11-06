@@ -7,12 +7,12 @@ The README also explains how to use the measured and simulated PV data for e-fue
 This repository contains:
 - Measured data from real photovoltaic (PV) plants
 - Python scripts for extracting PV power production data from PVGIS and Renewables.ninja
-- Python scripts for data analysis, graphs, and error analysis
+- Python scripts for data analysis and graphs
 
 ## Sharing PV measured data
 
 If you have high resolution PV **power** measurement data that you can make public, you can share it here!
-We do not need the time series with all the data points but **only the hourly aggregated values**. 
+We do not need the time series with all the data points but **only the normalized hourly aggregated values**. 
 Higher resolution data can be shared but only two days are enough (one cloudy day and one sunny day).
 
 To share your PV power data, please follow these steps:
