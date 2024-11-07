@@ -1,104 +1,109 @@
-
 import pandas as pd
 import requests
 import io
 import time
 import os
-#To run this script: fill up/check the "input_datasheet.xlsx" file and put your Renewables.ninja token (more infos in the README)
 
-# Load the Excel file
-file_path = os.path.join("Simulated PV data","Input files","input_datasheet.xlsx") #In this file fill the required data for the sites where you would like to extract data
-sheet_name = "datasheet"
-df = pd.read_excel(file_path, sheet_name=sheet_name)
+# Define location name and file path
+location_name = "Utrecht"  # This can be changed to any other location
+rn_token = '357952a8676cd53bca5860e5ecafa180c8dc4879'  # Replace with your actual token
+file_path = os.path.join("Measured PV data", location_name, "Meas_PV_power.xlsx")
 
-# Setup sessions for APIs
+# Load the setup data
+sheet_name = "PV_plant_setup"
+df_setup = pd.read_excel(file_path, sheet_name=sheet_name, index_col="Parameter")
+parameters = df_setup['Value']
+
+# Setup API sessions
 pvgis_session = requests.Session()
 rn_session = requests.Session()
-rn_token = 'bc82ea6654e50592c62c10a19de0d02b6cb0e333' #Paste your Renewables.ninja token here
 rn_session.headers = {'Authorization': 'Token ' + rn_token}
 
 # Databases for each API
 pvgis_databases = ['PVGIS-SARAH2', 'PVGIS-ERA5']
 rn_databases = ['merra2', 'sarah']
 
-# Dictionary to store production data for each installation, database, and year
+# Dictionary to store production data
 productions = {}
 
-# Function to generate date ranges
+# Function to generate date ranges for each year
 def generate_date_ranges(start_year, end_year):
     return [(f"{year}-01-01", f"{year}-12-31") for year in range(start_year, end_year + 1)]
 
-# Function to create URL for PVGIS
-def create_pvgis_url(row, db, year):
+# Function to create URL for PVGIS API call
+def create_pvgis_url(db, year):
     return (
         f"https://re.jrc.ec.europa.eu/api/v5_2/seriescalc?"
-        f"lat={row['latitude']}&lon={row['longitude']}&aspect={row['azimuth'] - 180}&angle={row['tilt']}"
-        f"&pvcalculation=1&peakpower={int(row['peakpower_kW'])}.0&loss={row['loss']}&pvtechchoice={row['pv_technology']}"
+        f"lat={parameters['Latitude']}&lon={parameters['Longitude']}&aspect={parameters['Azimuth'] - 180}"
+        f"&angle={parameters['Tilt']}&pvcalculation=1&peakpower={int(parameters['Capacity Factor 1'])}.0"
+        f"&loss={parameters['System loss']}&pvtechchoice={parameters['PV technology']}"
         f"&startyear={year}&endyear={year}&outputformat=csv"
-        f"&mountingplace={row['building/free']}&browser=1&raddatabase={db}"
+        f"&mountingplace={parameters['Building/free']}&browser=1&raddatabase={db}"
     )
 
-# Iterate over the dataframe to get production data for each installation
-for index, row in df.iterrows():
-    # PVGIS Data Retrieval
-    for db in pvgis_databases:
-        for year in range(int(row['startyear']), int(row['endyear']) + 1):
-            api_url = create_pvgis_url(row, db, year)
-            identifier = f"{row['cod']}{year}_PG-{db.split('-')[1]}"  # Append year here
-            try:
-                response = pvgis_session.get(api_url)
-                if response.status_code == 200:
-                    data = pd.read_csv(io.StringIO(response.text), skiprows=10)
-                    data = data[:-7]  # Assuming data format requires removing the last 7 rows
-                    productions.setdefault(identifier, []).extend((data["P"].astype(float)/1000).values)
-                else:
-                    print(f"Data not available in PVGIS for {identifier}")
-            except Exception as e:
-                print(f"Data not available in PVGIS for {identifier}: {e}")
+# Iterate through each year range
+start_year = int(parameters['Start year'])
+end_year = int(parameters['End year'])
 
-    # Renewable Ninja Data Retrieval
+# Retrieve and process data for each API and year range
+for year in range(start_year, end_year + 1):
+    # Load measured data from the specified year
+    sheet_measured = f"{location_name}{year}"
+    df_measured = pd.read_excel(file_path, sheet_name=sheet_measured)
+    measured_data = df_measured['Normalized PV power corrected']
+    productions[f"{location_name}_{year}_PV-MEAS"] = measured_data.values
+
+    for db in pvgis_databases:
+        api_url = create_pvgis_url(db, year)
+        identifier = f"{location_name}_{year}_PG-{db.split('-')[1]}"
+        response = pvgis_session.get(api_url)
+        if response.status_code == 200:
+            data = pd.read_csv(io.StringIO(response.text), skiprows=10)
+            data = data[:-7]  # Adjusting based on API data format
+            productions.setdefault(identifier, []).extend((data["P"].astype(float) / 1000).values)
+        else:
+            print(f"Error retrieving data from PVGIS for {identifier}")
+
     for db in rn_databases:
-        for date_from, date_to in generate_date_ranges(int(row['startyear']), int(row['endyear'])):
-            year = date_from[:4]
-            identifier = f"{row['cod']}{year}_RN-{db.upper()}"
+        for date_from, date_to in generate_date_ranges(year, year):
+            identifier = f"{location_name}_{year}_RN-{db.upper()}"
             args = {
-                'lat': row['latitude'],
-                'lon': row['longitude'],
+                'lat': parameters['Latitude'],
+                'lon': parameters['Longitude'],
                 'date_from': date_from,
                 'date_to': date_to,
                 'dataset': db,
-                'capacity': row['peakpower_kW'],
-                'system_loss': row['loss'] / 100,
-                'tracking': 0 if row['fixed'] == 1 else row['tracking'],
-                'tilt': row['tilt'],
-                'azim': row['azimuth'],
+                'capacity': parameters['Capacity Factor 1'],
+                'system_loss': parameters['System loss'] / 100,
+                'tracking': 0 if parameters['Fixed'] == 1 else parameters['Tracking'],
+                'tilt': parameters['Tilt'],
+                'azim': parameters['Azimuth'],
                 'format': 'csv'
             }
-            while True:
-                response = rn_session.get(f"https://www.renewables.ninja/api/data/pv", params=args)
-                if response.status_code == 200:
-                    data = pd.read_csv(io.StringIO(response.text), skiprows=3)
-                    productions.setdefault(identifier, []).extend(data['electricity'].astype(float).values)
-                    break
-                elif response.status_code == 429:
-                    retry_after = int(response.headers.get('Retry-After', 3600))
-                    print(f"Rate limit hit for Renewables.Ninja. Pausing for {retry_after} seconds.")
-                    time.sleep(retry_after)
-                else:
-                    print(f"Data not available in Renewables.Ninja for {identifier}: {response.text}")
-                    break
+            response = rn_session.get("https://www.renewables.ninja/api/data/pv", params=args)
+            if response.status_code == 200:
+                data = pd.read_csv(io.StringIO(response.text), skiprows=3)
+                productions.setdefault(identifier, []).extend(data['electricity'].astype(float).values)
+            elif response.status_code == 429:
+                retry_after = int(response.headers.get('Retry-After', 3600))
+                print(f"Rate limit hit for Renewables Ninja. Pausing for {retry_after} seconds.")
+                time.sleep(retry_after)
+            else:
+                print(f"Error retrieving data from Renewables Ninja for {identifier}")
 
 # Convert all lists to pandas Series and create a DataFrame
 for key, value in productions.items():
     productions[key] = pd.Series(value)
 output_df = pd.DataFrame(productions)
-output_df.index += 1 #Start first line at 1 instead of 0
+output_df.index += 1  # Start first line at 1 instead of 0
 
 # Desired order for databases
-database_order = ['RN-MERRA2', 'RN-SARAH', 'PG-SARAH', 'PG-SARAH2', 'PG-ERA5']
+database_order = ['PV-MEAS', 'RN-MERRA2', 'RN-SARAH', 'PG-SARAH', 'PG-SARAH2', 'PG-ERA5']
 
 # Function to extract sort keys from column names
 def sort_key(col):
+    if col.endswith("PV-MEAS"):
+        return (col[:-5], col[-4:], 0)  # 'MEAS' sorting as the first
     location_year, db = col.split('_', 1)  # Split at the first underscore
     year = location_year[-4:]  # Extract the year (last four characters)
     location = location_year[:-4]  # Extract location (all but last four characters)
@@ -115,10 +120,25 @@ output_df = output_df[sorted_columns]
 # Generate new column headers based on the sorted columns
 new_columns = []
 index_counter = 1
+
 for col in sorted_columns:
-    location_year, db = col.split('_', 1)
-    new_columns.append(("Solar fixed", location_year, f"PG-{db.split('-')[1]}", "RPU_Solar_fixed", str(index_counter)))
+    parts = col.split('_')
+    if len(parts) > 2:  # Check if there are enough parts
+        location = parts[0]
+        year = parts[1]
+        db = parts[2]
+        db_name = db.split('-')[1] if '-' in db else db  # Extract database name correctly
+        location_year = f"{location}{year}"
+        new_columns.append(("Solar fixed", location_year, f"PV-{db_name}", "RPU_Solar_fixed", str(index_counter)))
+    else:
+        print(f"Unexpected column format: {col}")
     index_counter += 1
+#for col in sorted_columns:
+#    location_year, db = col.split('_', 1)
+#    new_columns.append(("Solar fixed", location_year, f"PV-{db.split('-')[1]}", "RPU_Solar_fixed", str(index_counter)))
+#    print(location_year)
+#    index_counter += 1
+
 
 # Create a MultiIndex
 multi_index = pd.MultiIndex.from_tuples(new_columns, names=["", "Locations", "Profile time series", "Subsets", "Index"])
@@ -126,13 +146,12 @@ multi_index = pd.MultiIndex.from_tuples(new_columns, names=["", "Locations", "Pr
 # Assign this MultiIndex to the DataFrame
 output_df.columns = multi_index
 
-#Remove values after 8760 hours
-
 # Create directory for saving result file
-output_dir = os.path.join("Simulated PV data",'Results simulated time series')
+output_dir = os.path.join("Time series analysis graphs", 'Input files')
 os.makedirs(output_dir, exist_ok=True)
 
-output_file = "PV_DATA_sim.csv"
-output_df.to_csv(os.path.join(output_dir,output_file))  
+# Save the DataFrame to CSV
+output_file = f"{location_name}_meas_sim.csv"
+output_df.to_csv(os.path.join(output_dir, output_file))
 
-print("Simulated PV data csv file successfully generated!")
+print("Output CSV file successfully generated!")
