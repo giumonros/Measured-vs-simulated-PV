@@ -62,7 +62,7 @@ for year in range(start_year, end_year + 1):
             data = data[:-7]  # Adjusting based on API data format
             productions.setdefault(identifier, []).extend((data["P"].astype(float) / 1000).values)
         else:
-            print(f"Error retrieving data from PVGIS for {identifier}")
+            print(f"Data non available from PVGIS for {identifier}")
 
     for db in rn_databases:
         for date_from, date_to in generate_date_ranges(year, year):
@@ -89,7 +89,7 @@ for year in range(start_year, end_year + 1):
                 print(f"Rate limit hit for Renewables Ninja. Pausing for {retry_after} seconds.")
                 time.sleep(retry_after)
             else:
-                print(f"Error retrieving data from Renewables Ninja for {identifier}")
+                print(f"Data not available from Renewables Ninja for {identifier}")
 
 # Convert all lists to pandas Series and create a DataFrame
 for key, value in productions.items():
@@ -129,7 +129,7 @@ for col in sorted_columns:
         db = parts[2]
         db_name = db.split('-')[1] if '-' in db else db  # Extract database name correctly
         location_year = f"{location}{year}"
-        new_columns.append(("Solar fixed", location_year, f"PV-{db_name}", "RPU_Solar_fixed", str(index_counter)))
+        new_columns.append(("Solar fixed", location_year, db, "RPU_Solar_fixed", str(index_counter)))
     else:
         print(f"Unexpected column format: {col}")
     index_counter += 1

@@ -1,6 +1,6 @@
 ,Solar fixed,Solar fixed,Solar fixed,Solar fixed,Solar fixed,Solar fixed,Solar fixed,Solar fixed,Solar fixed,Solar fixed,Solar fixed,Solar fixed,Solar fixed,Solar fixed,Solar fixed,Solar fixed,Solar fixed,Solar fixed
 Locations,Utrecht2014,Utrecht2014,Utrecht2014,Utrecht2014,Utrecht2015,Utrecht2015,Utrecht2015,Utrecht2015,Utrecht2016,Utrecht2016,Utrecht2016,Utrecht2017,Utrecht2017,Utrecht2017,Utrecht2014,Utrecht2015,Utrecht2016,Utrecht2017
-Profile time series,PV-SARAH2,PV-ERA5,PV-MERRA2,PV-SARAH,PV-SARAH2,PV-ERA5,PV-MERRA2,PV-SARAH,PV-SARAH2,PV-ERA5,PV-MERRA2,PV-SARAH2,PV-ERA5,PV-MERRA2,PV-MEAS,PV-MEAS,PV-MEAS,PV-MEAS
+Profile time series,PG-SARAH2,PG-ERA5,RN-MERRA2,RN-SARAH,PG-SARAH2,PG-ERA5,RN-MERRA2,RN-SARAH,PG-SARAH2,PG-ERA5,RN-MERRA2,PG-SARAH2,PG-ERA5,RN-MERRA2,PV-MEAS,PV-MEAS,PV-MEAS,PV-MEAS
 Subsets,RPU_Solar_fixed,RPU_Solar_fixed,RPU_Solar_fixed,RPU_Solar_fixed,RPU_Solar_fixed,RPU_Solar_fixed,RPU_Solar_fixed,RPU_Solar_fixed,RPU_Solar_fixed,RPU_Solar_fixed,RPU_Solar_fixed,RPU_Solar_fixed,RPU_Solar_fixed,RPU_Solar_fixed,RPU_Solar_fixed,RPU_Solar_fixed,RPU_Solar_fixed,RPU_Solar_fixed
 Index,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18
 1,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
