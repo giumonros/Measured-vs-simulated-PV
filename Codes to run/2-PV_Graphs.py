@@ -11,7 +11,7 @@ from matplotlib.colors import LinearSegmentedColormap
 #------------------------------------------------------------------------------------------
 
 # Define location name
-location_name = "Almeria"  # This can be changed to any other location
+location_name = "Utrecht"  # This can be changed to any other location
 
 #------------------------------------------------------------------------------------------
 
@@ -43,6 +43,8 @@ locations = list(set(col.split()[0] for col in data.columns))
 # Create directory for saving graphs
 output_dir = "Output graphs"
 os.makedirs(output_dir, exist_ok=True)
+output_dir_loc = os.path.join(output_dir,location_name)
+os.makedirs(output_dir_loc, exist_ok=True)
 
 # Custom settings for the plots (colors, line styles, etc.)
 legend_names = ['PV-MEAS', 'RN-MERRA2', 'RN-SARAH', 'PG-SARAH', 'PG-SARAH2', 'PG-ERA5', 'CR-ERA5', 'SIM-SELF1']
@@ -120,7 +122,8 @@ for location in locations:
     plt.ylim(0, 1)
     plt.xlim(0, 5000)
     plt.legend(loc='upper right', fontsize=12)
-    plt.savefig(os.path.join(output_dir, f"{location}_Capacity_Factors.png"), bbox_inches='tight')
+    plt.savefig(os.path.join(output_dir_loc, f"{location}_Capacity_Factors.png"), bbox_inches='tight')
+    print("Capacity factors figure successfully generated in the 'Output graphs' folder")
     plt.close()
 
     # Generate scatter plots for each simulation tool
@@ -148,7 +151,8 @@ for location in locations:
         fig.delaxes(axs[j])
 
     plt.tight_layout()
-    plt.savefig(os.path.join(output_dir, f'{location}_scatterplot.png'))
+    plt.savefig(os.path.join(output_dir_loc, f'{location}_scatterplot.png'))
+    print("Scatter plot figure successfully generated in the 'Output graphs' folder")
     plt.close()
 
 # Convert metrics results to DataFrames
@@ -170,5 +174,6 @@ for location in locations:
     axes[1].set_ylabel('MAE (%)')
     axes[2].set_ylabel('RMSE (%)')
     plt.tight_layout()
-    plt.savefig(os.path.join(output_dir, f'{location}_Errors_Analysis.png'))
+    plt.savefig(os.path.join(output_dir_loc, f'{location}_Errors_Analysis.png'))
+    print("Error analysis figure successfully generated in the 'Output graphs' folder")
     plt.close()

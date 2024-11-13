@@ -13,7 +13,7 @@ rn_token = '357952a8676cd53bca5860e5ecafa180c8dc4879'  # Replace with your actua
 
 #----------------------------------------------------------------------------------------------
 
-file_path = os.path.join("Measured PV data", location_name, "Meas_PV_power.xlsx")
+file_path = os.path.join("Measured PV data", f"{location_name}.xlsx")
 
 # Load the setup data
 sheet_name = "PV_plant_setup"
@@ -41,7 +41,7 @@ def create_pvgis_url(db, year):
     return (
         f"https://re.jrc.ec.europa.eu/api/v5_2/seriescalc?"
         f"lat={parameters['Latitude']}&lon={parameters['Longitude']}&aspect={parameters['Azimuth'] - 180}"
-        f"&angle={parameters['Tilt']}&pvcalculation=1&peakpower={int(parameters['Capacity Factor 1'])}.0"
+        f"&angle={parameters['Tilt']}&pvcalculation=1&peakpower={int(parameters['Max capacity simulation'])}.0"
         f"&loss={parameters['System loss']}&pvtechchoice={parameters['PV technology']}"
         f"&startyear={year}&endyear={year}&outputformat=csv"
         f"&mountingplace={parameters['Building/free']}&browser=1&raddatabase={db}"
@@ -79,7 +79,7 @@ for year in range(start_year, end_year + 1):
                 'date_from': date_from,
                 'date_to': date_to,
                 'dataset': db,
-                'capacity': parameters['Capacity Factor 1'],
+                'capacity': parameters['Max capacity simulation'],
                 'system_loss': parameters['System loss'] / 100,
                 'tracking': 0 if parameters['Fixed'] == 1 else parameters['Tracking'],
                 'tilt': parameters['Tilt'],
@@ -160,4 +160,4 @@ os.makedirs(output_dir, exist_ok=True)
 output_file = f"{location_name}_meas_sim.csv"
 output_df.to_csv(os.path.join(output_dir, output_file))
 
-print("Output CSV file successfully generated!")
+print("Output CSV file successfully generated in the 'Simulated and measured PV data folder' !")
