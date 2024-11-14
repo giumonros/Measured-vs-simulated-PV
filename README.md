@@ -1,15 +1,14 @@
 # Measured-vs-simulated-PV
 
-This repository has been created based on the work presented in the article: [ADD DOI]
+This repository has been created based on the work presented in this article: https://doi.org/10.1016/j.rser.2024.115044 
 The aim of this repository is to facilate the data sharing of measured PV profiles and compare measured and simulated PV power production data.
 The README also explains how to use the measured and simulated PV data for e-fuel techno-economic assessments. 
 
 This repository contains:
-- Measured data from real photovoltaic (PV) plants (``Measured PV data`` folder)
-- Python scripts for extracting PV power production data from PVGIS and Renewables.ninja (``Codes to run`` folder)
-- Python scripts for data analysis and graphs (``Codes to run`` folder)
-- Outputs files combining simulated and measured time series (``Simulated and measured PV data`` folder)
-- Output graphs for measured vs simulated time series analysis
+- Measured data from real photovoltaic (PV) plants (``Measured PV data``)
+- Python scripts for extracting PV power production data from PVGIS and Renewables.ninja, data analysis and graphs (``Codes to run``)
+- Outputs files combining simulated and measured time series (``Simulated and measured PV data``)
+- Output graphs for measured vs simulated time series analysis (``Output graphs``)
 
 ## Sharing PV measured data
 
@@ -27,7 +26,7 @@ To share your PV power data, please follow these steps:
 
 4- Go inside the ``Measured PV data`` folder ; Click on "Add files" and "Upload files" ; Upload your new excel file
 
-5- Commit the changes, create a pull request and we will review it!
+5- Commit the changes, create a pull request, we will review it and after a while your data will be shared on the repository!
 
 ## Installation guide for the PV time series analysis tool
 
@@ -74,8 +73,7 @@ pip install -r requirements.txt
 4- You can now run the script by clicking on the small arrow on the top right of the VS Code window (make sure that you are running with the correct environment set-up in the installation step).
 The generated time series will save in the ``Simulated and measured PV data`` folder. 
 
-5- You can add a personalized simulation and use it for the graphs inserting a new column called "SIM-SELF1".
-
+5- You can add a personalized simulation and use it for the graphs inserting a new column and writting "SIM-SELF1" in the "Profile time series" row.
 
 ## Drawing time-series analysis graphs
 
@@ -87,11 +85,11 @@ The generated time series will save in the ``Simulated and measured PV data`` fo
 
 1- Go to the techno-economic assessment Github tool "OptiPlant" and follow the instructions to install it: https://github.com/njbca/OptiPlant/ 
 
-2- In "OptiPlant > Base > Data > Profiles > Meas-vs-sim" open the "All_profiles.xlsx" file (make a copy a keep it somewhere in case)
+2- In "OptiPlant > Base > Data > Profiles > Meas-vs-sim" open the "All_profiles.xlsx" file
 
 3- Delete the input data in the "Flux" sheet and copy-paste the ones from the file in the ``Simulated and measured PV data`` folder
 
-4- Adapt the sheet "ScenariosToRun" in the file ``Meas_vs_sim_data.xlsx`` in "OptiPlant > Base > Data > Inputs > Meas-vs-sim" to your case
+4- Adapt the sheet "ScenariosToRun" in the file ``Meas_vs_sim_data.xlsx`` in "OptiPlant > Base > Data > Inputs > Meas-vs-sim" to your convenience
 
 5- Run the techno-economic model
 
@@ -104,4 +102,4 @@ API Documentation: https://re.jrc.ec.europa.eu/pvg_tools/en/tools.html#PVP
 Renewable Ninja API: Renewable Ninja provides simulation data for solar and wind energy production at any location worldwide.
 API Documentation: https://www.renewables.ninja/api
 
-Remember to credit Renewables.ninja and PVGIS appropriately in your work :)
+If using this script or related data, please remember to credit Renewables.ninja, PVGIS and cite https://doi.org/10.1016/j.rser.2024.115044 appropriately in your work,  :)
