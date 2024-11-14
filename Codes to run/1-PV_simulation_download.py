@@ -13,6 +13,22 @@ rn_token = '357952a8676cd53bca5860e5ecafa180c8dc4879'  # Replace with your actua
 
 #----------------------------------------------------------------------------------------------
 
+# By default the script will download the PV power simulations for all databases and versions of PVGIS and Renewables Ninja
+# You can modify the following part of the script to select specific databases and versions
+
+# Specify the PVGIS versions and databases with a mapping
+pvgis_versions = ['v5_2', 'v5_3']  # List of versions to use
+
+# Map each version to its appropriate databases
+pvgis_databases_by_version = {
+    'v5_2': ['PVGIS-SARAH','PVGIS-SARAH2', 'PVGIS-ERA5'],
+    'v5_3': ['PVGIS-SARAH3', 'PVGIS-ERA5']
+}
+
+rn_databases = ['merra2', 'sarah']
+
+#----------------------------------------------------------------------------------------------
+
 file_path = os.path.join("Measured PV data", f"{location_name}.xlsx")
 
 # Load the setup data
@@ -25,16 +41,7 @@ pvgis_session = requests.Session()
 rn_session = requests.Session()
 rn_session.headers = {'Authorization': 'Token ' + rn_token}
 
-# Specify the PVGIS versions and databases with a mapping
-pvgis_versions = ['v5_2', 'v5_3']  # List of versions to use
 
-# Map each version to its appropriate databases
-pvgis_databases_by_version = {
-    'v5_2': ['PVGIS-SARAH','PVGIS-SARAH2', 'PVGIS-ERA5'],
-    'v5_3': ['PVGIS-SARAH3', 'PVGIS-ERA5']
-}
-
-rn_databases = ['merra2', 'sarah']
 
 # Dictionary to store production data
 productions = {}
