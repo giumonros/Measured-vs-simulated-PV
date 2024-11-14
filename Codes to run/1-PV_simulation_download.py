@@ -25,8 +25,15 @@ pvgis_session = requests.Session()
 rn_session = requests.Session()
 rn_session.headers = {'Authorization': 'Token ' + rn_token}
 
-# Databases for each API
-pvgis_databases = ['PVGIS-SARAH2', 'PVGIS-ERA5']
+# Specify the PVGIS versions and databases with a mapping
+pvgis_versions = ['v5_2', 'v5_3']  # List of versions to use
+
+# Map each version to its appropriate databases
+pvgis_databases_by_version = {
+    'v5_2': ['PVGIS-SARAH','PVGIS-SARAH2', 'PVGIS-ERA5'],
+    'v5_3': ['PVGIS-SARAH3', 'PVGIS-ERA5']
+}
+
 rn_databases = ['merra2', 'sarah']
 
 # Dictionary to store production data
@@ -36,10 +43,10 @@ productions = {}
 def generate_date_ranges(start_year, end_year):
     return [(f"{year}-01-01", f"{year}-12-31") for year in range(start_year, end_year + 1)]
 
-# Function to create URL for PVGIS API call
-def create_pvgis_url(db, year):
+# Function to create URL for PVGIS API call, using specified version and database
+def create_pvgis_url(version, db, year):
     return (
-        f"https://re.jrc.ec.europa.eu/api/v5_2/seriescalc?"
+        f"https://re.jrc.ec.europa.eu/api/{version}/seriescalc?"
         f"lat={parameters['Latitude']}&lon={parameters['Longitude']}&aspect={parameters['Azimuth'] - 180}"
         f"&angle={parameters['Tilt']}&pvcalculation=1&peakpower={int(parameters['Max capacity simulation'])}.0"
         f"&loss={parameters['System loss']}&pvtechchoice={parameters['PV technology']}"
@@ -47,11 +54,11 @@ def create_pvgis_url(db, year):
         f"&mountingplace={parameters['Building/free']}&browser=1&raddatabase={db}"
     )
 
-# Iterate through each year range
+# Iterate through each year range and version
 start_year = int(parameters['Start year'])
 end_year = int(parameters['End year'])
 
-# Retrieve and process data for each API and year range
+# Retrieve and process data for each API, year range, and version
 for year in range(start_year, end_year + 1):
     # Load measured data from the specified year
     sheet_measured = f"{location_name}{year}"
@@ -59,17 +66,21 @@ for year in range(start_year, end_year + 1):
     measured_data = df_measured['Normalized PV power corrected']
     productions[f"{location_name}_{year}_PV-MEAS"] = measured_data.values
 
-    for db in pvgis_databases:
-        api_url = create_pvgis_url(db, year)
-        identifier = f"{location_name}_{year}_PG-{db.split('-')[1]}"
-        response = pvgis_session.get(api_url)
-        if response.status_code == 200:
-            data = pd.read_csv(io.StringIO(response.text), skiprows=10)
-            data = data[:-7]  # Adjusting based on API data format
-            productions.setdefault(identifier, []).extend((data["P"].astype(float) / 1000).values)
-        else:
-            print(f"Data non available from PVGIS for {identifier}")
-
+    for version in pvgis_versions:
+        for db in pvgis_databases_by_version[version]:
+            # Customize the identifier to match the required format
+            version_number = '2' if version == 'v5_2' else '3'
+            db_name = db.split('-')[1]  # Extract SARAH2, SARAH3, or ERA5
+            identifier = f"{location_name}_{year}_PG{version_number}-{db_name}"
+            
+            api_url = create_pvgis_url(version, db, year)
+            response = pvgis_session.get(api_url)
+            if response.status_code == 200:
+                data = pd.read_csv(io.StringIO(response.text), skiprows=10)
+                data = data[:-7]  # Adjusting based on API data format
+                productions.setdefault(identifier, []).extend((data["P"].astype(float) / 1000).values)
+            else:
+                print(f"Data not available from PVGIS for {identifier}")
     for db in rn_databases:
         for date_from, date_to in generate_date_ranges(year, year):
             identifier = f"{location_name}_{year}_RN-{db.upper()}"
@@ -103,8 +114,8 @@ for key, value in productions.items():
 output_df = pd.DataFrame(productions)
 output_df.index += 1  # Start first line at 1 instead of 0
 
-# Desired order for databases
-database_order = ['PV-MEAS', 'RN-MERRA2', 'RN-SARAH', 'PG-SARAH', 'PG-SARAH2', 'PG-ERA5']
+# Updated database order to include PG2-SARAH
+database_order = ['PV-MEAS', 'RN-MERRA2', 'RN-SARAH', 'PG2-SARAH', 'PG2-SARAH2', 'PG2-ERA5', 'PG3-SARAH3', 'PG3-ERA5']
 
 # Function to extract sort keys from column names
 def sort_key(col):
@@ -113,8 +124,11 @@ def sort_key(col):
     location_year, db = col.split('_', 1)  # Split at the first underscore
     year = location_year[-4:]  # Extract the year (last four characters)
     location = location_year[:-4]  # Extract location (all but last four characters)
-    db_key = db.split('-')[1] if '-' in db else db  # Normalize the db part for sorting
-    db_index = database_order.index(db_key) if db_key in database_order else len(database_order)
+    
+    # Normalize database part for sorting
+    db_key = db.split('-')[1] if '-' in db else db  # This extracts "SARAH", "SARAH2", etc.
+    db_index = database_order.index(db) if db in database_order else len(database_order)
+    
     return (location, year, db_index)
 
 # Sort columns based on custom key

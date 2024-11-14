@@ -47,18 +47,18 @@ output_dir_loc = os.path.join(output_dir,location_name)
 os.makedirs(output_dir_loc, exist_ok=True)
 
 # Custom settings for the plots (colors, line styles, etc.)
-legend_names = ['PV-MEAS', 'RN-MERRA2', 'RN-SARAH', 'PG-SARAH', 'PG-SARAH2', 'PG-ERA5', 'CR-ERA5', 'SIM-SELF1']
-colors_CF = ['red', 'blue', 'blue', 'orange', 'orange', 'orange', 'green', 'purple']
-linestyles = ['-', '--', ':', ':', '-', '-.', '-.', '-.']
-line_widths = [3, 2, 2, 2, 2, 2, 2, 2]
+legend_names = ['PV-MEAS', 'RN-MERRA2', 'RN-SARAH', 'PG2-SARAH', 'PG2-SARAH2', 'PG2-ERA5', 'PG3-SARAH3', 'PG3-ERA5','CR-ERA5', 'SIM-SELF1']
+colors_CF = ['red', 'blue', 'blue', 'orange', 'orange', 'orange', 'darkorange', 'darkorange', 'green', 'purple']
+linestyles = ['-', '--', ':', ':', '-', '-.', '-', '-.', '-.', '-.']
+line_widths = [3, 2, 2, 2, 2, 2, 2, 2, 2, 2]
 
 # Define color palette for bar plots
 plot_palette = {
     'RN-MERRA2': 'blue',
-    'PG-SARAH2': 'orange',
-    'PG-ERA5': 'darkgoldenrod',
+    'PG3-SARAH3': 'orange',
+    'PG3-ERA5': 'darkgoldenrod',
     'CR-ERA5': 'green',
-    'PG-SARAH': 'gold',
+    'PG2-SARAH': 'gold',
     'RN-SARAH': 'dodgerblue',
     'SIM-SELF1': 'purple',
 }
