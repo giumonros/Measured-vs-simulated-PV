@@ -35,7 +35,7 @@ def convert_comma_to_dot(df):
 clear_sky_df = convert_comma_to_dot(clear_sky_df)
 cloudy_sky_df = convert_comma_to_dot(cloudy_sky_df)
 
-# Definition of columns of interest
+# Definition of columns of interest 
 column_names = ['Timeserie', 'PV_MEASURED_sec', 'PV_MEASURED_hourly', 'RN_MERRA2', 'RN_SARAH', 'PG_SARAH', 'PG_SARAH2', 'PG_ERA5', 'CR_ERA5']
 legend_names = [ 'Measured data', 'Measured hourly', 'RN_MERRA2', 'RN_SARAH', 'PG_SARAH', 'PG_SARAH2', 'PG_ERA5', 'CR_ERA5']  # Excludes 'Timeserie' from the legend names
 colors = ['red', 'black', 'blue','blue', 'orange','orange','orange','green']

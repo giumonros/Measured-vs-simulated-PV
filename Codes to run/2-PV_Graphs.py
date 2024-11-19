@@ -19,7 +19,14 @@ location_name = "Utrecht"  # This can be changed to any other location
 file_path = os.path.join("Simulated and measured PV data", f"{location_name}_meas_sim.csv")
 data = pd.read_csv(file_path, header=None).iloc[:, 1:]  # Skip the first column and load without headers
 
-# Drop specific rows (originally 0, 3, and 4)
+# Create directory for saving graphs
+output_dir = "Output graphs"
+os.makedirs(output_dir, exist_ok=True)
+output_dir_loc = os.path.join(output_dir,location_name)
+os.makedirs(output_dir_loc, exist_ok=True)
+
+
+# Drop specific rows (originally 0, 3, and 4) that are useful only for the techno-economic assessment
 data.drop(index=[0, 3, 4], inplace=True)
 
 # Reset index to realign row numbers
@@ -40,17 +47,60 @@ data = data.apply(pd.to_numeric, errors='coerce', axis=1)  # Convert to numeric 
 # Identify unique locations
 locations = list(set(col.split()[0] for col in data.columns))
 
-# Create directory for saving graphs
-output_dir = "Output graphs"
-os.makedirs(output_dir, exist_ok=True)
-output_dir_loc = os.path.join(output_dir,location_name)
-os.makedirs(output_dir_loc, exist_ok=True)
+#Identify unique time series
+legend_names = list(set(col.split()[1] for col in data.columns))
 
 # Custom settings for the plots (colors, line styles, etc.)
-legend_names = ['PV-MEAS', 'RN-MERRA2', 'RN-SARAH', 'PG2-SARAH', 'PG2-SARAH2', 'PG2-ERA5', 'PG3-SARAH3', 'PG3-ERA5','CR-ERA5', 'SIM-SELF1']
-colors_CF = ['red', 'blue', 'blue', 'orange', 'orange', 'orange', 'darkorange', 'darkorange', 'green', 'purple']
-linestyles = ['-', '--', ':', ':', '-', '-.', '-', '-.', '-.', '-.']
-line_widths = [3, 2, 2, 2, 2, 2, 2, 2, 2, 2]
+
+# Initialize lists for colors and line styles
+colors_CF = []
+linestyles = []
+
+# Loop through each legend name and assign color and line style (can possibly be changed)
+for name in legend_names:
+    # Determine color based on keywords
+    if "PV-MEAS" in name:
+        colors_CF.append("red")
+    elif "RN" in name:
+        colors_CF.append("blue")
+    elif "PG2" in name:
+        colors_CF.append("orange")
+    elif "PG3" in name:
+        colors_CF.append("darkorange")
+    elif "CR" in name:
+        colors_CF.append("green")
+    elif "SIM" in name:
+        colors_CF.append("purple")
+    else:
+        colors_CF.append("black")  # Default color if no match
+
+    # Determine line style based on keywords
+    if "PV-MEAS" in name:
+        linestyles.append("-")
+    if "MERRA2" in name:
+        linestyles.append("--")
+    elif "SARAH" in name:
+        linestyles.append(":")
+    elif "SARAH2" in name:
+        linestyles.append("-")
+    elif "SARAH3" in name:
+        linestyles.append("-")
+    elif "ERA5" in name:
+        linestyles.append("-.")
+    else:
+        linestyles.append("-.")  # Default line style if no match
+
+# Print the lists
+print("Colors:", colors_CF)
+print("Line Styles:", linestyles)
+
+# Initialize the line_widths list based on the condition
+line_widths = [3 if name == "PV-MEAS" else 2 for name in legend_names]
+
+#legend_names = ['PV-MEAS', 'RN-MERRA2', 'RN-SARAH', 'PG2-SARAH', 'PG2-SARAH2', 'PG2-ERA5', 'PG3-SARAH3', 'PG3-ERA5','CR-ERA5', 'SIM-SELF1']
+#colors_CF = ['red', 'blue', 'blue', 'orange', 'orange', 'orange', 'darkorange', 'darkorange', 'green', 'purple']
+#linestyles = ['-', '--', ':', ':', '-', '-.', '-', '-.', '-.', '-.']
+#line_widths = [3, 2, 2, 2, 2, 2, 2, 2, 2, 2]
 
 # Define color palette for bar plots
 plot_palette = {
@@ -59,6 +109,7 @@ plot_palette = {
     'PG3-ERA5': 'darkgoldenrod',
     'CR-ERA5': 'green',
     'PG2-SARAH': 'gold',
+    'PG2-SARAH2': 'black',
     'RN-SARAH': 'dodgerblue',
     'SIM-SELF1': 'purple',
 }
@@ -123,7 +174,7 @@ for location in locations:
     plt.xlim(0, 5000)
     plt.legend(loc='upper right', fontsize=12)
     plt.savefig(os.path.join(output_dir_loc, f"{location}_Capacity_Factors.png"), bbox_inches='tight')
-    print("Capacity factors figure successfully generated in the 'Output graphs' folder")
+    print(f"Capacity factors figure successfully generated in the '{output_dir}' folder for {location}")
     plt.close()
 
     # Generate scatter plots for each simulation tool
@@ -152,7 +203,7 @@ for location in locations:
 
     plt.tight_layout()
     plt.savefig(os.path.join(output_dir_loc, f'{location}_scatterplot.png'))
-    print("Scatter plot figure successfully generated in the 'Output graphs' folder")
+    print(f"Scatter plot figure successfully generated in the '{output_dir}' folder for {location}")
     plt.close()
 
 # Convert metrics results to DataFrames
@@ -166,14 +217,14 @@ for location in locations:
     loc_mae_df = mae_df[mae_df['Location'] == location]
     loc_rmse_df = rmse_df[rmse_df['Location'] == location]
     fig, axes = plt.subplots(3, 1, figsize=(10, 14))
-    sns.barplot(x='Tool', y='Mean Difference (%)', data=loc_mean_diff_df, palette=plot_palette, ax=axes[0])
-    sns.barplot(x='Tool', y='MAE (%)', data=loc_mae_df, palette=plot_palette, ax=axes[1])
-    sns.barplot(x='Tool', y='RMSE (%)', data=loc_rmse_df, palette=plot_palette, ax=axes[2])
+    sns.barplot(x='Tool', y='Mean Difference (%)', data=loc_mean_diff_df, hue='Tool', palette=plot_palette, ax=axes[0])
+    sns.barplot(x='Tool', y='MAE (%)', data=loc_mae_df, hue='Tool', palette=plot_palette, ax=axes[1])
+    sns.barplot(x='Tool', y='RMSE (%)', data=loc_rmse_df, hue='Tool', palette=plot_palette, ax=axes[2])
 
     axes[0].set_ylabel('Mean Difference (%)')
     axes[1].set_ylabel('MAE (%)')
     axes[2].set_ylabel('RMSE (%)')
     plt.tight_layout()
     plt.savefig(os.path.join(output_dir_loc, f'{location}_Errors_Analysis.png'))
-    print("Error analysis figure successfully generated in the 'Output graphs' folder")
+    print(f"Error analysis figure successfully generated in the '{output_dir}' folder for {location}")
     plt.close()
