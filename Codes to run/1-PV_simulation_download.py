@@ -41,8 +41,6 @@ pvgis_session = requests.Session()
 rn_session = requests.Session()
 rn_session.headers = {'Authorization': 'Token ' + rn_token}
 
-
-
 # Dictionary to store production data
 productions = {}
 
@@ -181,4 +179,4 @@ os.makedirs(output_dir, exist_ok=True)
 output_file = f"{location_name}_meas_sim.csv"
 output_df.to_csv(os.path.join(output_dir, output_file))
 
-print("Output CSV file successfully generated in the 'Simulated and measured PV data folder' !")
+print(f"Output CSV file successfully generated in the '{output_dir}' folder !")

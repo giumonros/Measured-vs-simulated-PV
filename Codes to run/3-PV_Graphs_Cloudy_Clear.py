@@ -10,15 +10,17 @@ location_name = "Utrecht"  # This can be changed to any other location
 
 #----------------------------------------------------------------------------------------------
 
-file_path = os.path.join("Measured PV data", f"{location_name}.xlsx")
-clear_sky_df = pd.read_excel(file_path, sheet_name='Clear sky day')
-cloudy_sky_df = pd.read_excel(file_path, sheet_name='Cloudy sky day')
-
 # Create directory for saving graphs
 output_dir = "Output graphs"
 os.makedirs(output_dir, exist_ok=True)
 output_dir_loc = os.path.join(output_dir,location_name)
 os.makedirs(output_dir_loc, exist_ok=True)
+
+#Collect the clear sky day and cloudy sky day high resolution data 
+
+file_path = os.path.join("Measured PV data", f"{location_name}.xlsx")
+clear_sky_df = pd.read_excel(file_path, sheet_name='Clear sky day')
+cloudy_sky_df = pd.read_excel(file_path, sheet_name='Cloudy sky day')
 
 # Function to convert columns with commas to decimal numbers
 def convert_comma_to_dot(df):
@@ -34,6 +36,10 @@ def convert_comma_to_dot(df):
 # Apply the conversion function to both DataFrames
 clear_sky_df = convert_comma_to_dot(clear_sky_df)
 cloudy_sky_df = convert_comma_to_dot(cloudy_sky_df)
+
+
+#Take hourly data from the "Simulated and measured PV data" file for the correct day
+
 
 # Definition of columns of interest 
 column_names = ['Timeserie', 'PV_MEASURED_sec', 'PV_MEASURED_hourly', 'RN_MERRA2', 'RN_SARAH', 'PG_SARAH', 'PG_SARAH2', 'PG_ERA5', 'CR_ERA5']
