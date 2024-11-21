@@ -1,7 +1,7 @@
 # Measured-vs-simulated-PV
 
-This repository has been created based on the work presented in this article: https://doi.org/10.1016/j.rser.2024.115044 
-The aim of this repository is to facilate the data sharing of measured PV profiles and compare measured and simulated PV power production data.
+This repository has been created based on the work presented in this article: https://doi.org/10.1016/j.rser.2024.115044
+. The aim of this repository is to facilate the data sharing of measured PV profiles and compare measured and simulated PV power production data.
 The README also explains how to use the measured and simulated PV data for e-fuel techno-economic assessments. 
 
 This repository contains:
@@ -27,6 +27,8 @@ To share your PV power data, please follow these steps:
 4- Go inside the ``Measured PV data`` folder ; Click on "Add files" and "Upload files" ; Upload your new excel file
 
 5- Commit the changes, create a pull request, we will review it and after a while your data will be shared on the repository!
+
+6- If you have questions, you can also contact us by e-mail
 
 ## Installation guide for the PV time series analysis tool
 
@@ -102,4 +104,9 @@ API Documentation: https://re.jrc.ec.europa.eu/pvg_tools/en/tools.html#PVP
 Renewable Ninja API: Renewable Ninja provides simulation data for solar and wind energy production at any location worldwide.
 API Documentation: https://www.renewables.ninja/api
 
-If using this script or related data, please remember to credit Renewables.ninja, PVGIS and cite https://doi.org/10.1016/j.rser.2024.115044 appropriately in your work,  :)
+If using this script or related data, please remember to credit Renewables.ninja, PVGIS and cite https://doi.org/10.1016/j.rser.2024.115044 appropriately in your work :)
+
+## Support
+
+If you have questions or would like to discuss about PV power data sharing do not hesitate to send an e-mail at [giulia.montanari@polito.it](mailto:giulia.montanari@polito.it) or [njbca@dtu.dk](mailto:njbca@dtu.dk).
+
