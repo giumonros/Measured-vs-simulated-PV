@@ -132,15 +132,15 @@ for name in legend_names:
     if "MERRA2" in name:
         linestyles_CF.append("--")
         linestyles_high_res.append("--")
-    elif "SARAH" in name:
-        linestyles_CF.append(":")
-        linestyles_high_res.append(":")
-    elif "SARAH2" in name:
-        linestyles_CF.append("-")
-        linestyles_high_res.append("-")
     elif "SARAH3" in name:
         linestyles_CF.append("-")
         linestyles_high_res.append("-")
+    elif "SARAH2" in name:
+        linestyles_CF.append("-")
+        linestyles_high_res.append("-")
+    elif "SARAH" in name:
+        linestyles_CF.append(":")
+        linestyles_high_res.append(":")
     elif "ERA5" in name:
         linestyles_CF.append("-.")
         linestyles_high_res.append("-.")
