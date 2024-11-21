@@ -132,15 +132,15 @@ for name in legend_names:
     if "MERRA2" in name:
         linestyles_CF.append("--")
         linestyles_high_res.append("--")
-    elif "SARAH" in name:
-        linestyles_CF.append(":")
-        linestyles_high_res.append(":")
-    elif "SARAH2" in name:
-        linestyles_CF.append("-")
-        linestyles_high_res.append("-")
     elif "SARAH3" in name:
         linestyles_CF.append("-")
         linestyles_high_res.append("-")
+    elif "SARAH2" in name:
+        linestyles_CF.append("-")
+        linestyles_high_res.append("-")
+    elif "SARAH" in name:
+        linestyles_CF.append(":")
+        linestyles_high_res.append(":")
     elif "ERA5" in name:
         linestyles_CF.append("-.")
         linestyles_high_res.append("-.")
@@ -203,7 +203,7 @@ for location in locations:
 
     # ********************************************* Plot hourly capacity factors ********************************************************
     plt.figure(figsize=(10, 6))
-    loc_data_sorted = filtered_data.apply(lambda x: x.sort_values(ascending=False).reset_index(drop=True))
+    loc_data_sorted = loc_data.apply(lambda x: x.sort_values(ascending=False).reset_index(drop=True))
     for idx, tool in enumerate(legend_names):
         tool_column = f"{location} {tool}"
         if tool_column in loc_data_sorted.columns:
@@ -250,86 +250,87 @@ for location in locations:
     print(f"Scatter plot figure successfully generated in the '{output_dir}' folder for {location}")
     plt.close()
 
-    # Calculate and store metrics for each simulation tool
+
+        # Calculate and store metrics for each simulation tool
     for sim_col in valid_columns:
         if sim_col != meas_column and any(tool in sim_col for tool in plot_palette.keys()):
             simulated_data = loc_data[sim_col].dropna()
+            measured_data = loc_data[meas_column].dropna()
             if not simulated_data.empty:
-                mean_diff = (simulated_data.mean() - real_data.mean()) * 100
-                mae = mean_absolute_error(real_data, simulated_data) * 100
-                rmse = np.sqrt(mean_squared_error(real_data, simulated_data)) * 100
+                mean_diff = (simulated_data.mean() - measured_data.mean()) * 100
+                mae = mean_absolute_error(measured_data, simulated_data) * 100
+                rmse = np.sqrt(mean_squared_error(measured_data, simulated_data)) * 100
                 mean_diff_results.append({'Location': location, 'Tool': sim_col.split()[1], 'Mean Difference (%)': mean_diff})
                 mae_results.append({'Location': location, 'Tool': sim_col.split()[1], 'MAE (%)': mae})
                 rmse_results.append({'Location': location, 'Tool': sim_col.split()[1], 'RMSE (%)': rmse})
+    
 
 # ************************************************************ Error analysis *********************************************************************   
+# Create a figure with three subplots
+fig, axes = plt.subplots(3, 1, figsize=(16, 15))
 
-# Define tick font size and tool order
+# Define tick font size
 tick_font_size = 16
+
+# Extract the tool order from the palette (ensures tools are plotted in this specific order)
 tool_order = list(plot_palette.keys())
 
-# Function to create a single bar plot
-def create_bar_plot(ax, data, metric, ylabel, ylim):
-    sns.barplot(x='Tool', y=metric, data=data, palette=plot_palette, hue_order=tool_order, ax=ax)
-    ax.set_ylabel(ylabel, fontsize=20)
-    ax.tick_params(axis='both', labelsize=tick_font_size)
-    ax.set_axisbelow(True)
-    ax.grid(True, axis='y')
-    ax.set_xlabel('')
-    ax.yaxis.set_major_formatter(plt.FuncFormatter(lambda x, _: int(x)))
-    ax.get_legend().remove()
-    ax.set_ylim(*ylim)
-    add_labels(ax)
+# Plot Mean Difference
+sns.barplot(x='Location', y='Mean Difference (%)', hue='Tool', data=mean_diff_df,
+            palette=plot_palette, hue_order=tool_order, ax=axes[0])
+axes[0].set_ylabel('Annual average \nCF difference (%)', fontsize=20)
+axes[0].tick_params(axis='both', labelsize=tick_font_size)
+axes[0].set_axisbelow(True)
+axes[0].grid(True, axis='y')
+axes[0].set_xlabel('')
+axes[0].yaxis.set_major_formatter(plt.FuncFormatter(lambda x, _: int(x)))
+axes[0].get_legend().remove()
+axes[0].set_ylim(-0.4, 4)  # Adjust y-limit before adding labels
+add_labels(axes[0])
 
-# Loop through each location to create and save plots
-for location in locations:
-    # Filter data for the current location
-    loc_mean_diff_df = mean_diff_df[mean_diff_df['Location'] == location]
-    loc_mae_df = mae_df[mae_df['Location'] == location]
-    loc_rmse_df = rmse_df[rmse_df['Location'] == location]
+# Plot MAE
+sns.barplot(x='Location', y='MAE (%)', hue='Tool', data=mae_df,
+            palette=plot_palette, hue_order=tool_order, ax=axes[1])
+axes[1].set_ylabel('Annual MAE \nof CF (%)', fontsize=20)
+axes[1].tick_params(axis='both', labelsize=tick_font_size)
+axes[1].set_axisbelow(True)
+axes[1].grid(True, axis='y')
+axes[1].set_xlabel('')
+axes[1].yaxis.set_major_formatter(plt.FuncFormatter(lambda x, _: int(x)))
+axes[1].get_legend().remove()
+axes[1].set_ylim(-0.3, 8)  # Adjust y-limit before adding labels
+add_labels(axes[1])
 
-    # Create figure and subplots
-    fig, axes = plt.subplots(3, 1, figsize=(16, 10))
+# Plot RMSE
+sns.barplot(x='Location', y='RMSE (%)', hue='Tool', data=rmse_df,
+            palette=plot_palette, hue_order=tool_order, ax=axes[2])
+axes[2].set_ylabel('Annual RMSE of CF (%)', fontsize=20)
+axes[2].tick_params(axis='both', labelsize=tick_font_size)
+axes[2].set_axisbelow(True)
+axes[2].grid(True, axis='y')
+axes[2].set_xlabel('Location', fontsize=20)
+axes[2].yaxis.set_major_formatter(plt.FuncFormatter(lambda x, _: int(x)))
+axes[2].get_legend().remove()
+axes[2].set_ylim(-0.3, 15)  # Adjust y-limit before adding labels
+add_labels(axes[2])
 
-    # Plot metrics using the reusable function
-    create_bar_plot(axes[0], loc_mean_diff_df, 'Mean Difference (%)', 'Annual average \nCF difference (%)', (-0.4, 4))
-    create_bar_plot(axes[1], loc_mae_df, 'MAE (%)', 'Annual MAE \nof CF (%)', (-0.3, 8))
-    create_bar_plot(axes[2], loc_rmse_df, 'RMSE (%)', 'Annual RMSE of CF (%)', (-0.3, 15))
+# Adjust layout
+plt.tight_layout()
 
-    # Adjust layout
-    plt.tight_layout()
+# Create one legend for all plots at the bottom
+handles, labels = axes[2].get_legend_handles_labels()  # Use handles from the last subplot
+fig.legend(
+    handles, labels, loc='lower center', ncol=len(tool_order),
+    bbox_to_anchor=(0.5, -0.05), fontsize=16, title_fontsize=18, frameon=False
+)
 
-    # Save the plot
-    plt.savefig(os.path.join(output_dir_loc, f'{location}_Errors_Analysis.png'))
-    print(f"Error analysis figure successfully generated in the '{output_dir_loc}' folder for {location}")
-    plt.close()
+# Save the combined plot
+combined_plot_path = os.path.join(output_dir_loc, f'{location_name}_Errors_Analysis.png')
+plt.savefig(combined_plot_path, bbox_inches='tight')
+print(f"Combined error analysis figure successfully generated in the '{output_dir}' folder.")
+plt.close()
 
 
-
-
-
-#************************************************************vecchio codice
-# Convert metrics results to DataFrames
-#mean_diff_df = pd.DataFrame(mean_diff_results)
-#mae_df = pd.DataFrame(mae_results)
-#rmse_df = pd.DataFrame(rmse_results)
-
-# Plot summary statistics
-#for location in locations:
-#    loc_mean_diff_df = mean_diff_df[mean_diff_df['Location'] == location]
-#    loc_mae_df = mae_df[mae_df['Location'] == location]
- #   loc_rmse_df = rmse_df[rmse_df['Location'] == location]
- #   fig, axes = plt.subplots(3, 1, figsize=(10, 14))
- #   sns.barplot(x='Tool', y='Mean Difference (%)', data_sim_meas=loc_mean_diff_df, hue='Tool', palette=plot_palette, ax=axes[0])
-  #  sns.barplot(x='Tool', y='MAE (%)', data_sim_meas=loc_mae_df, hue='Tool', palette=plot_palette, ax=axes[1])
- #   sns.barplot(x='Tool', y='RMSE (%)', data_sim_meas=loc_rmse_df, hue='Tool', palette=plot_palette, ax=axes[2])
-
- #   axes[0].set_ylabel('Mean Difference (%)')
- #   axes[1].set_ylabel('MAE (%)')
- #   axes[2].set_ylabel('RMSE (%)')
-#    plt.tight_layout()  #  plt.savefig(os.path.join(output_dir_loc, f'{location}_Errors_Analysis.png'))
- #   print(f"Error analysis figure successfully generated in the '{output_dir}' folder for {location}")
-  #  plt.close()
 
 # ******************************************Plot cloudy and clear sky Figure **************************************************************
 
