@@ -74,7 +74,6 @@ data_sim_meas = data_sim_meas.apply(pd.to_numeric, errors='coerce', axis=1)  # C
 
 #Merge only the year were there is high resolution data (user provided)
 data_sim_meas_filtered = data_sim_meas.loc[:, data_sim_meas.columns.str.contains(year_cloudy_day_selected)]
-data_sim_meas_filtered.colums = data_sim_meas_filtered.columns.str.replace(location_name + year_cloudy_day_selected,'',regex=False)
 data_sim_meas_filtered = data_sim_meas_filtered.reset_index()  # Adds a new column 'index' with row numbers starting from 0
 data_sim_meas_filtered.rename(columns={'index': 'Hour of the year'}, inplace=True)  # Rename it for matchin
 
@@ -91,7 +90,7 @@ locations = list(set(col.split()[0] for col in data_sim_meas.columns))
 #Identify unique time series for legend names
 legend_names = list(set(col.split()[1] for col in data_sim_meas.columns))
 #Legend names for the clear sky and cloudy day Figure
-legend_names_highres = cloudy_sky_df.columns[2:]
+legend_names_high_res = list(set(col.split()[1] for col in cloudy_sky_df.columns))
 
 # Initialize lists for colors and line styles for the capacity factor and high resolution PV data figure
 colors_CF = []
@@ -105,52 +104,75 @@ for name in legend_names:
     # Determine color based on keywords
     if "PV-MEAS" in name:
         colors_CF.append("red")
-        colors_high_res.append("black")
     elif "RN" in name:
         colors_CF.append("blue")
-        colors_high_res.append("blue")
     elif "PG2" in name:
         colors_CF.append("orange")
-        colors_high_res.append("orange")
     elif "PG3" in name:
         colors_CF.append("darkorange")
-        colors_high_res.append("darkorange")
     elif "CR" in name:
         colors_CF.append("green")
-        colors_high_res.append("green")
     elif "SIM" in name:
         colors_CF.append("purple")
-        colors_high_res.append("purple")
     else:
-        colors_CF.append("black")
-        colors_high_res.append("darkgreen")  # Default color if no match
+        colors_CF.append("black")  # Default color if no match
 
     # Determine line style based on keywords
     if "PV-MEAS" in name:
         linestyles_CF.append("-")
-        linestyles_high_res.append("-")
-    if "MERRA2" in name:
+    elif "MERRA2" in name:
         linestyles_CF.append("--")
-        linestyles_high_res.append("--")
     elif "SARAH3" in name:
         linestyles_CF.append("-")
-        linestyles_high_res.append("-")
     elif "SARAH2" in name:
         linestyles_CF.append("-")
-        linestyles_high_res.append("-")
     elif "SARAH" in name:
         linestyles_CF.append(":")
-        linestyles_high_res.append(":")
     elif "ERA5" in name:
         linestyles_CF.append("-.")
+    else:
+        linestyles_CF.append("-.") # Default line style if no match
+   
+for name in legend_names_high_res:
+    # Determine color based on keywords
+    if "PV-MEAS_high_resolution" in name:
+        colors_high_res.append("red")
+    elif "PV_MEAS" in name:
+        colors_high_res.append("black")
+    elif "RN" in name:
+        colors_high_res.append("blue")
+    elif "PG2" in name:
+        colors_high_res.append("orange")
+    elif "PG3" in name:
+        colors_high_res.append("darkorange")
+    elif "CR" in name:
+        colors_high_res.append("green")
+    elif "SIM" in name:
+        colors_high_res.append("purple")
+    else:
+        colors_high_res.append("darkgreen")  # Default color if no match
+
+    # Determine line style based on keywords
+    if "PV-MEAS_high_resolution" in name:
+        linestyles_high_res.append("-")
+    elif "PV-MEAS" in name:
+        linestyles_high_res.append("-")
+    elif "MERRA2" in name:
+        linestyles_high_res.append("--")
+    elif "SARAH3" in name:
+        linestyles_high_res.append("-")
+    elif "SARAH2" in name:
+        linestyles_high_res.append("-")
+    elif "SARAH" in name:
+        linestyles_high_res.append(":")
+    elif "ERA5" in name:
         linestyles_high_res.append("-.")
     else:
-        linestyles_CF.append("-.")
         linestyles_high_res.append("-.")  # Default line style if no match
 
 # Initialize the line_widths list for the capacity factor figure based on the condition
 line_widths_CF = [3 if name == "PV-MEAS" else 2 for name in legend_names]
-line_widths_high_res= [3 if name == "PV-MEAS" else 2 for name in legend_names_highres]
+line_widths_high_res= [3 if name == "PV-MEAS" else 2 for name in legend_names_high_res]
 
 # Add the color code and line style for the high resolution measured data
 colors_high_res.append('red')
@@ -250,7 +272,6 @@ for location in locations:
     print(f"Scatter plot figure successfully generated in the '{output_dir}' folder for {location}")
     plt.close()
 
-
         # Calculate and store metrics for each simulation tool
     for sim_col in valid_columns:
         if sim_col != meas_column and any(tool in sim_col for tool in plot_palette.keys()):
@@ -275,6 +296,10 @@ tick_font_size = 16
 # Extract the tool order from the palette (ensures tools are plotted in this specific order)
 tool_order = list(plot_palette.keys())
 
+mean_diff_df = pd.DataFrame(mean_diff_results)
+mae_df = pd.DataFrame(mae_results)
+rmse_df = pd.DataFrame(rmse_results)
+
 # Plot Mean Difference
 sns.barplot(x='Location', y='Mean Difference (%)', hue='Tool', data=mean_diff_df,
             palette=plot_palette, hue_order=tool_order, ax=axes[0])
@@ -286,7 +311,7 @@ axes[0].set_xlabel('')
 axes[0].yaxis.set_major_formatter(plt.FuncFormatter(lambda x, _: int(x)))
 axes[0].get_legend().remove()
 axes[0].set_ylim(-0.4, 4)  # Adjust y-limit before adding labels
-add_labels(axes[0])
+#add_labels(axes[0])
 
 # Plot MAE
 sns.barplot(x='Location', y='MAE (%)', hue='Tool', data=mae_df,
@@ -299,7 +324,7 @@ axes[1].set_xlabel('')
 axes[1].yaxis.set_major_formatter(plt.FuncFormatter(lambda x, _: int(x)))
 axes[1].get_legend().remove()
 axes[1].set_ylim(-0.3, 8)  # Adjust y-limit before adding labels
-add_labels(axes[1])
+#add_labels(axes[1])
 
 # Plot RMSE
 sns.barplot(x='Location', y='RMSE (%)', hue='Tool', data=rmse_df,
@@ -312,7 +337,7 @@ axes[2].set_xlabel('Location', fontsize=20)
 axes[2].yaxis.set_major_formatter(plt.FuncFormatter(lambda x, _: int(x)))
 axes[2].get_legend().remove()
 axes[2].set_ylim(-0.3, 15)  # Adjust y-limit before adding labels
-add_labels(axes[2])
+#add_labels(axes[2])
 
 # Adjust layout
 plt.tight_layout()
@@ -342,9 +367,9 @@ def plot_data(df1, df2):
     time_series2 = df2['Data points']
     
     # Plotting for Clear Sky Day
-    for i, column in enumerate(column_names[1:]):  # Iterate only over columns of interest
-        axs[0].plot(time_series1, df1[column], label=legend_names[i],
-                    color=colors[i], linestyle=linestyles[i], linewidth=line_widths[i])
+    for i, column in clear_sky_df.columns:  # Iterate only over columns of interest
+        axs[0].plot(time_series1, df1[column], label=legend_names_high_res[i],
+                    color=colors_high_res[i], linestyle=linestyles_high_res[i], linewidth=line_widths_high_res[i])
     axs[0].set_title(f'{location_name} - Clear Sky Day', fontsize=20)
     axs[0].set_xlabel('Number of timesteps', fontsize=16)
     axs[0].set_ylabel('Normalized power profiles', fontsize=16)
@@ -354,9 +379,9 @@ def plot_data(df1, df2):
     axs[0].grid(True)
     
     # Plotting for Cloudy Sky Day
-    for i, column in enumerate(column_names[1:]):  # Iterate only over columns of interest
-        axs[1].plot(time_series2, df2[column], label=legend_names[i],
-                    color=colors[i], linestyle=linestyles[i], linewidth=line_widths[i])
+    for i, column in cloudy_sky_df.columns:  # Iterate only over columns of interest
+        axs[1].plot(time_series2, df2[column], label=legend_names_high_res[i],
+                    color=colors_high_res[i], linestyle=linestyles_high_res[i], linewidth=line_widths_high_res[i])
     axs[1].set_title(f'{location_name} - Cloudy Sky Day', fontsize=20)
     axs[1].set_xlabel('Number of timesteps', fontsize=16)
     axs[1].set_ylabel('Normalized power profiles', fontsize=16)
