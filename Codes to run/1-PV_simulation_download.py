@@ -79,6 +79,10 @@ for year in range(start_year, end_year + 1):
             identifier = f"{location_name}_{year}_PG{version_number}-{db_name}"
             
             api_url = create_pvgis_url(version, db, year)
+
+            # Print the generated URL for debugging
+            print(f"Generated URL for version '{version}', database '{db}', year '{year}': {api_url}")
+
             response = pvgis_session.get(api_url)
             if response.status_code == 200:
                 data = pd.read_csv(io.StringIO(response.text), skiprows=10)
@@ -171,6 +175,9 @@ multi_index = pd.MultiIndex.from_tuples(new_columns, names=["", "Locations", "Pr
 # Assign this MultiIndex to the DataFrame
 output_df.columns = multi_index
 
+# Truncate the DataFrame to the first 8760 rows of data
+output_df = output_df.iloc[:8760]
+
 # Create directory for saving result file
 output_dir = "Simulated and measured PV data"
 os.makedirs(output_dir, exist_ok=True)
@@ -179,4 +186,4 @@ os.makedirs(output_dir, exist_ok=True)
 output_file = f"{location_name}_meas_sim.csv"
 output_df.to_csv(os.path.join(output_dir, output_file))
 
-print(f"Output CSV file successfully generated in the '{output_dir}' folder !")
+print(f"Output {location_name} CSV file successfully generated in the '{output_dir}' folder !")
