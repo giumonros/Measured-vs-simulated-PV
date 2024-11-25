@@ -115,8 +115,13 @@ locations = list(set(col.split()[0] for col in data_sim_meas.columns))
 #Identify unique time series for legend names
 legend_names = list(set(col.split()[1] for col in data_sim_meas.columns))
 #Legend names for the clear sky and cloudy day Figure
-legend_names_high_res = list(set(col.split()[1] for col in cloudy_sky_df.columns))
 
+legend_names_high_res = list(set(
+    col.split()[1]
+    for df in [cloudy_sky_df, clear_sky_df]  # Iterate over both DataFrames
+    for col in df.columns
+    if len(col.split()) == 2  # Ensure the column name splits into exactly two parts
+))
 #legend_names_high_res = list(set(col.split()[1] for col in cloudy_sky_df.columns if len(col.split()) > 1))
 
 # Initialize lists for colors and line styles for the capacity factor and high resolution PV data figure
@@ -428,31 +433,38 @@ def plot_data(df1, df2):
     
     # Plotting for Clear Sky Day
     for i, column in enumerate(column_names_df1):  # Iterate only over all columns in df1
-        line, = axs[0].plot(time_series1, df1[column], label=legend_names_high_res[i],
-                            color=colors_high_res[i], linestyle=linestyles_high_res[i], linewidth=line_widths_high_res[i])
-        if line.get_label() not in all_labels:  # Avoid duplicate labels
-            all_handles.append(line)
-            all_labels.append(line.get_label())
+        # Check if the legend matches a valid entry
+        if column.split()[1] in legend_names_high_res:  # Match against the legend
+            idx = legend_names_high_res.index(column.split()[1])  # Get the index in the legend list
+            line, = axs[0].plot(time_series1, df1[column], label=legend_names_high_res[idx],
+                                color=colors_high_res[idx], linestyle=linestyles_high_res[idx], linewidth=line_widths_high_res[idx])
+            if line.get_label() not in all_labels:  # Avoid duplicate labels
+                all_handles.append(line)
+                all_labels.append(line.get_label())
     axs[0].set_title(f'{location_name} - Clear Sky Day', fontsize=20)
     axs[0].set_xlabel('Number of timesteps', fontsize=16)
     axs[0].set_ylabel('Normalized power profiles', fontsize=16)
     axs[0].set_xlim(0, len(df1))  # Sets x-axis limits
     axs[0].set_ylim(0, 1)  # Sets y-axis limits
     axs[0].grid(True)
-
+    
     # Plotting for Cloudy Sky Day
     for i, column in enumerate(column_names_df2):  # Iterate only over all columns in df2
-        line, = axs[1].plot(time_series2, df2[column], label=legend_names_high_res[i],
-                            color=colors_high_res[i], linestyle=linestyles_high_res[i], linewidth=line_widths_high_res[i])
-        if line.get_label() not in all_labels:  # Avoid duplicate labels
-            all_handles.append(line)
-            all_labels.append(line.get_label())
+        # Check if the legend matches a valid entry
+        if column.split()[1] in legend_names_high_res:  # Match against the legend
+            idx = legend_names_high_res.index(column.split()[1])  # Get the index in the legend list
+            line, = axs[1].plot(time_series2, df2[column], label=legend_names_high_res[idx],
+                                color=colors_high_res[idx], linestyle=linestyles_high_res[idx], linewidth=line_widths_high_res[idx])
+            if line.get_label() not in all_labels:  # Avoid duplicate labels
+                all_handles.append(line)
+                all_labels.append(line.get_label())
     axs[1].set_title(f'{location_name} - Cloudy Sky Day', fontsize=20)
     axs[1].set_xlabel('Number of timesteps', fontsize=16)
     axs[1].set_ylabel('Normalized power profiles', fontsize=16)
     axs[1].set_xlim(0, len(df2))  # Sets x-axis limits
     axs[1].set_ylim(0, 1)  # Sets y-axis limits
     axs[1].grid(True)
+
 
     # Adjust y-axis label size for both subplots
     for ax in axs:
