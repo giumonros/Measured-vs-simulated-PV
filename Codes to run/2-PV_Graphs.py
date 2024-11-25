@@ -51,8 +51,6 @@ def convert_comma_to_dot(df):
 clear_sky_df = convert_comma_to_dot(clear_sky_df)
 cloudy_sky_df = convert_comma_to_dot(cloudy_sky_df)
 
-# ********** Merge the ""simulated and measured PV data" and "Measured PV data" for the clear sky and cloudy day figure
-
 # *********** Pre-process the "simulated and measured PV data" and "input file" ***************
 
 # Drop specific rows (originally 0, 3, and 4) that are useful only for the techno-economic assessment
@@ -72,7 +70,7 @@ data_sim_meas = data_sim_meas.iloc[:8760, :]
 data_sim_meas.columns = [' '.join(col).strip() for col in data_sim_meas.columns.values]
 data_sim_meas = data_sim_meas.apply(pd.to_numeric, errors='coerce', axis=1)  # Convert to numeric where possible
 
-# Perform the merge between sim-meas file and high resolution measured data for matching hour of the year
+# ********** Merge the ""simulated and measured PV data" and "Measured PV data" for the clear sky and cloudy day figure
 
 #Merge only the year were there is high resolution data (user provided)
 data_sim_meas_filtered = data_sim_meas.loc[:, data_sim_meas.columns.str.contains(year_cloudy_day_selected)]
