@@ -11,6 +11,8 @@ from matplotlib.colors import LinearSegmentedColormap
 
 # Define location name
 location_name = "Utrecht"  # This can be changed to any other location
+location_year = "2014" #Write 
+
 year_cloudy_day_selected = "2014" # Insert here the year of data from a cloudy day, same as in the "Measured PV data" folder
 year_clear_sky_day_selected = "2015"  # Insert here the year of data from a cloudy day, same as in the "Measured PV data" folder
 
@@ -49,6 +51,8 @@ def convert_comma_to_dot(df):
 clear_sky_df = convert_comma_to_dot(clear_sky_df)
 cloudy_sky_df = convert_comma_to_dot(cloudy_sky_df)
 
+# ********** Merge the ""simulated and measured PV data" and "Measured PV data" for the clear sky and cloudy day figure
+
 # *********** Pre-process the "simulated and measured PV data" and "input file" ***************
 
 # Drop specific rows (originally 0, 3, and 4) that are useful only for the techno-economic assessment
@@ -70,17 +74,39 @@ data_sim_meas = data_sim_meas.apply(pd.to_numeric, errors='coerce', axis=1)  # C
 
 # ********** Merge the ""simulated and measured PV data" and "Measured PV data" for the clear sky and cloudy day figure
 
-#Merge only the year were there is high resolution data (user provided)
-data_sim_meas_filtered = data_sim_meas.loc[:, data_sim_meas.columns.str.contains(year_cloudy_day_selected)]
-data_sim_meas_filtered.colums = data_sim_meas_filtered.columns.str.replace(location_name + year_cloudy_day_selected,'',regex=False) #it does not work --> fix the legend
-data_sim_meas_filtered = data_sim_meas_filtered.reset_index()  # Adds a new column 'index' with row numbers starting from 0
-data_sim_meas_filtered.rename(columns={'index': 'Hour of the year'}, inplace=True)  # Rename it for matchin
+# Merge data for the year with high-resolution data (for both cloudy and clear sky days)
 
-cloudy_sky_df = cloudy_sky_df.merge(data_sim_meas_filtered, on='Hour of the year', how='left')
-#Remove the two first columns
-cloudy_sky_df = cloudy_sky_df.iloc[:,2:]
-#Save csv
-cloudy_sky_df.to_csv('merged_output.csv', index=False)
+## Process data for the cloudy sky year
+data_sim_meas_filtered_cloudy = data_sim_meas.loc[:, data_sim_meas.columns.str.contains(year_cloudy_day_selected)]
+data_sim_meas_filtered_cloudy = data_sim_meas_filtered_cloudy.reset_index()  # Adds a new column 'index' with row numbers starting from 0
+data_sim_meas_filtered_cloudy.rename(columns={'index': 'Hour of the year'}, inplace=True)  # Rename for matching
+data_sim_meas_filtered_cloudy["Hour of the year"] = range(1, len(data_sim_meas_filtered_cloudy) + 1)  # Makes hour of the year start from 1
+
+# Merge with the cloudy sky DataFrame
+cloudy_sky_df = cloudy_sky_df.merge(data_sim_meas_filtered_cloudy, on='Hour of the year', how='left')
+# Remove the first two columns if unnecessary
+cloudy_sky_df = cloudy_sky_df.iloc[:, 2:]
+# Save the cloudy sky merged data
+cloudy_sky_df.to_csv('merged_output_cloudy.csv', index=False)
+
+# Process data for the clear sky year
+data_sim_meas_filtered_clear = data_sim_meas.loc[:, data_sim_meas.columns.str.contains(year_clear_sky_day_selected)]
+data_sim_meas_filtered_clear = data_sim_meas_filtered_clear.reset_index()  # Adds a new column 'index' with row numbers starting from 0
+data_sim_meas_filtered_clear.rename(columns={'index': 'Hour of the year'}, inplace=True)  # Rename for matching
+data_sim_meas_filtered_clear["Hour of the year"] = range(1, len(data_sim_meas_filtered_clear) + 1)  # Makes hour of the year start from 1
+
+# Merge with the clear sky DataFrame
+clear_sky_df = clear_sky_df.merge(data_sim_meas_filtered_clear, on='Hour of the year', how='left')
+# Remove the first two columns if unnecessary
+clear_sky_df = clear_sky_df.iloc[:, 2:]
+# Save the clear sky merged data
+clear_sky_df.to_csv('merged_output_clear.csv', index=False)
+
+
+
+#Remove the years that are not needed for the figures (user defined)
+data_sim_meas = data_sim_meas[[col for col in data_sim_meas.columns if location_year in col]]
+
 
 # ************ Custom settings for all the plots (colors, line styles, etc.) *********
 
@@ -89,7 +115,9 @@ locations = list(set(col.split()[0] for col in data_sim_meas.columns))
 #Identify unique time series for legend names
 legend_names = list(set(col.split()[1] for col in data_sim_meas.columns))
 #Legend names for the clear sky and cloudy day Figure
-legend_names_highres = cloudy_sky_df.columns[2:]
+legend_names_high_res = list(set(col.split()[1] for col in cloudy_sky_df.columns))
+
+#legend_names_high_res = list(set(col.split()[1] for col in cloudy_sky_df.columns if len(col.split()) > 1))
 
 # Initialize lists for colors and line styles for the capacity factor and high resolution PV data figure
 colors_CF = []
@@ -103,56 +131,76 @@ for name in legend_names:
     # Determine color based on keywords
     if "PV-MEAS" in name:
         colors_CF.append("red")
-        colors_high_res.append("black")
     elif "RN" in name:
         colors_CF.append("blue")
-        colors_high_res.append("blue")
     elif "PG2" in name:
         colors_CF.append("orange")
-        colors_high_res.append("orange")
     elif "PG3" in name:
         colors_CF.append("sienna")
-        colors_high_res.append("sienna")
     elif "CR" in name:
         colors_CF.append("green")
-        colors_high_res.append("green")
     elif "SIM" in name:
         colors_CF.append("purple")
-        colors_high_res.append("purple")
     else:
-        colors_CF.append("black")
-        colors_high_res.append("darkgreen")  # Default color if no match
+        colors_CF.append("black")  # Default color if no match
 
     # Determine line style based on keywords
     if "PV-MEAS" in name:
         linestyles_CF.append("-")
-        linestyles_high_res.append("-")
-    if "MERRA2" in name:
+    elif "MERRA2" in name:
         linestyles_CF.append("--")
-        linestyles_high_res.append("--")
     elif "SARAH3" in name:
         linestyles_CF.append("-")
-        linestyles_high_res.append("-")
     elif "SARAH2" in name:
         linestyles_CF.append("-")
-        linestyles_high_res.append("-")
     elif "SARAH" in name:
         linestyles_CF.append(":")
-        linestyles_high_res.append(":")
     elif "ERA5" in name:
         linestyles_CF.append("-.")
+    else:
+        linestyles_CF.append("-.")  # Default line style if no match
+
+for name in legend_names_high_res:
+    # Determine color based on keywords
+    if "PV-MEAS_high_resolution" in name:
+        colors_high_res.append("red")
+    elif "PV-MEAS" in name:
+        colors_high_res.append("black")
+    elif "RN" in name:
+        colors_high_res.append("blue")
+    elif "PG2" in name:
+        colors_high_res.append("orange")
+    elif "PG3" in name:
+        colors_high_res.append("sienna")
+    elif "CR" in name:
+        colors_high_res.append("green")
+    elif "SIM" in name:
+        colors_high_res.append("purple")
+    else:
+        colors_high_res.append("darkgreen")  # Default color if no match
+
+    # Determine line style based on keywords
+    if "PV-MEAS_high_resolution" in name:
+        linestyles_high_res.append("-")
+    elif "PV-MEAS" in name:
+        linestyles_high_res.append("-")
+    elif "MERRA2" in name:
+        linestyles_high_res.append("--")
+    elif "SARAH3" in name:
+        linestyles_high_res.append("-")
+    elif "SARAH2" in name:
+        linestyles_high_res.append("-")
+    elif "SARAH" in name:
+        linestyles_high_res.append(":")
+    elif "ERA5" in name:
         linestyles_high_res.append("-.")
     else:
-        linestyles_CF.append("-.")
         linestyles_high_res.append("-.")  # Default line style if no match
 
 # Initialize the line_widths list for the capacity factor figure based on the condition
 line_widths_CF = [3 if name == "PV-MEAS" else 2 for name in legend_names]
-line_widths_high_res= [3 if name == "PV-MEAS" else 2 for name in legend_names_highres]
+line_widths_high_res= [3 if name == "PV-MEAS" else 2 for name in legend_names_high_res]
 
-# Add the color code and line style for the high resolution measured data
-colors_high_res.append('red')
-linestyles_high_res.append("-")
 
 # Define color palette for bar plots with metrics
 plot_palette = {
@@ -294,10 +342,16 @@ tick_font_size = 16
 # Extract the tool order from the palette (ensures tools are plotted in this specific order)
 tool_order = list(plot_palette.keys())
 
+mean_diff_df = pd.DataFrame(mean_diff_results)
+mae_df = pd.DataFrame(mae_results)
+rmse_df = pd.DataFrame(rmse_results)
+
 # Sort DataFrames by Location
 mean_diff_df.sort_values(by='Location', inplace=True)
 mae_df.sort_values(by='Location', inplace=True)
 rmse_df.sort_values(by='Location', inplace=True)
+
+
 
 # Plot Mean Difference
 sns.barplot(x='Location', y='Mean Difference (%)', hue='Tool', data=mean_diff_df,
@@ -351,7 +405,7 @@ fig.legend(
 # Save the combined plot
 combined_plot_path = os.path.join(output_dir_loc, f'{location_name}_Errors_Analysis.png')
 plt.savefig(combined_plot_path, bbox_inches='tight')
-print(f"Combined error analysis figure successfully generated in the '{output_dir}' folder.")
+print(f"Combined error analysis figure successfully generated in the '{output_dir}' folder for {location}")
 plt.close()
 
 
@@ -361,32 +415,43 @@ plt.close()
 def plot_data(df1, df2):
     fig, axs = plt.subplots(1, 2, figsize=(20, 4))  # Compact layout
     
+    column_names_df1 = df1.columns.tolist()
+    column_names_df2 = df2.columns.tolist()
+
     # Extract the time series column
-    time_series1 = df1['Data points']
-    time_series2 = df2['Data points']
+    time_series1 = df1.index
+    time_series2 = df2.index
+
+    # Initialize lists to collect handles and labels for the legend
+    all_handles = []
+    all_labels = []
     
     # Plotting for Clear Sky Day
-    for i, column in enumerate(column_names[1:]):  # Iterate only over columns of interest
-        axs[0].plot(time_series1, df1[column], label=legend_names[i],
-                    color=colors[i], linestyle=linestyles[i], linewidth=line_widths[i])
+    for i, column in enumerate(column_names_df1):  # Iterate only over all columns in df1
+        line, = axs[0].plot(time_series1, df1[column], label=legend_names_high_res[i],
+                            color=colors_high_res[i], linestyle=linestyles_high_res[i], linewidth=line_widths_high_res[i])
+        if line.get_label() not in all_labels:  # Avoid duplicate labels
+            all_handles.append(line)
+            all_labels.append(line.get_label())
     axs[0].set_title(f'{location_name} - Clear Sky Day', fontsize=20)
     axs[0].set_xlabel('Number of timesteps', fontsize=16)
     axs[0].set_ylabel('Normalized power profiles', fontsize=16)
-    axs[0].set_xlim(0, time_series1.max())  # Sets x-axis limits
+    axs[0].set_xlim(0, len(df1))  # Sets x-axis limits
     axs[0].set_ylim(0, 1)  # Sets y-axis limits
-    #axs[0].legend(fontsize=10)
     axs[0].grid(True)
-    
+
     # Plotting for Cloudy Sky Day
-    for i, column in enumerate(column_names[1:]):  # Iterate only over columns of interest
-        axs[1].plot(time_series2, df2[column], label=legend_names[i],
-                    color=colors[i], linestyle=linestyles[i], linewidth=line_widths[i])
+    for i, column in enumerate(column_names_df2):  # Iterate only over all columns in df2
+        line, = axs[1].plot(time_series2, df2[column], label=legend_names_high_res[i],
+                            color=colors_high_res[i], linestyle=linestyles_high_res[i], linewidth=line_widths_high_res[i])
+        if line.get_label() not in all_labels:  # Avoid duplicate labels
+            all_handles.append(line)
+            all_labels.append(line.get_label())
     axs[1].set_title(f'{location_name} - Cloudy Sky Day', fontsize=20)
     axs[1].set_xlabel('Number of timesteps', fontsize=16)
     axs[1].set_ylabel('Normalized power profiles', fontsize=16)
-    axs[1].set_xlim(0, time_series2.max())  # Sets x-axis limits
+    axs[1].set_xlim(0, len(df2))  # Sets x-axis limits
     axs[1].set_ylim(0, 1)  # Sets y-axis limits
-    #axs[1].legend(fontsize=15)
     axs[1].grid(True)
 
     # Adjust y-axis label size for both subplots
@@ -394,8 +459,18 @@ def plot_data(df1, df2):
         ax.tick_params(axis='y', labelsize=15)
         ax.tick_params(axis='x', labelsize=15)
     
-    plt.tight_layout()
+    # Calculate ncol dynamically to fit all items in one line or max two rows
+    max_items_per_row = 9  # Adjust this number based on figure width and font size
+    ncol = min(len(all_labels), max_items_per_row)
+
+    # Add a single legend at the bottom
+    fig.legend(all_handles, all_labels, loc='lower center', bbox_to_anchor=(0.5, -0.15),
+               ncol=ncol, fontsize=15)
+
+    plt.tight_layout()  # Adjust rect to leave space for the legend
     plt.savefig(os.path.join(output_dir_loc, f'{location_name}_sec_vs_hourly_graph.png'), bbox_inches='tight')
     plt.close()
     print("High resolution PV data figure successfully generated in the 'Output graphs' folder")
 
+# Plotting both graphs side by side
+plot_data(cloudy_sky_df, clear_sky_df)
