@@ -46,12 +46,12 @@ You can also Fork this repository and clone it on your local machine with github
 6- Open the terminal inside VS Code by clicking Terminal > New Terminal. Run the following command to create an environment ``venv``:
 
 ``` bash
-python -m venv venv
+python -m venv .venv
 ```
 7- Activate the environment writting in the terminal
 
 ``` bash
-venv\Scripts\Activate.ps1
+.venv\Scripts\Activate.ps1
 ```
 
 8- Install the required libraries in this environment writting in the terminal:
