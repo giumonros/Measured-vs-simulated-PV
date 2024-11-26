@@ -1,7 +1,7 @@
 # Measured-vs-simulated-PV
 
 This repository has been created based on the work presented in this article: https://doi.org/10.1016/j.rser.2024.115044
-. The aim of this repository is to facilate the data sharing of measured PV profiles and compare measured and simulated PV power production data.
+. The data used for the article are in the ``Publication data`` folder. The aim of this repository is to facilate the data sharing of measured PV profiles and compare measured and simulated PV power production data.
 The README also explains how to use the measured and simulated PV data for e-fuel techno-economic assessments. 
 
 This repository contains:
@@ -79,9 +79,9 @@ The generated time series will save in the ``Simulated and measured PV data`` fo
 
 ## Drawing time-series analysis graphs
 
-1- In VS code, open the "Measured-vs-simulated-PV" folder and click on the ``2-PV_graphs`` or ``3-PV_Graphs_Cloudy_Clear`` python file in the ``Codes to run`` folder
+1- In VS code, open the "Measured-vs-simulated-PV" folder and click on the ``2-PV_graphs`` python file in the ``Codes to run`` folder
 
-2- Write the location on top the script and run. The graphs will save in the ``Output graphs`` folder
+2- Write the location and year on top the script and run. The graphs will save in the ``Output graphs`` folder
 
 ## Performing hydrogen techno-economic assessments with measured or simulated data
 

@@ -8,8 +8,8 @@ import os
 
 # Define location name (same as the one in the folder "Measured PV data") and renewables.ninja token
 
-location_name = "Utrecht"  # This can be changed to any other location
-rn_token = '357952a8676cd53bca5860e5ecafa180c8dc4879'  # Replace with your actual token
+location_name = "Utrecht"  # This can be changed to any other location available in the Measured PV data folder
+rn_token = 'Your token here'  # Replace with your Renewable.ninja token
 
 #----------------------------------------------------------------------------------------------
 
@@ -81,7 +81,7 @@ for year in range(start_year, end_year + 1):
             api_url = create_pvgis_url(version, db, year)
 
             # Print the generated URL for debugging
-            print(f"Generated URL for version '{version}', database '{db}', year '{year}': {api_url}")
+            #print(f"Generated URL for version '{version}', database '{db}', year '{year}': {api_url}")
 
             response = pvgis_session.get(api_url)
             if response.status_code == 200:
@@ -162,12 +162,6 @@ for col in sorted_columns:
     else:
         print(f"Unexpected column format: {col}")
     index_counter += 1
-#for col in sorted_columns:
-#    location_year, db = col.split('_', 1)
-#    new_columns.append(("Solar fixed", location_year, f"PV-{db.split('-')[1]}", "RPU_Solar_fixed", str(index_counter)))
-#    print(location_year)
-#    index_counter += 1
-
 
 # Create a MultiIndex
 multi_index = pd.MultiIndex.from_tuples(new_columns, names=["", "Locations", "Profile time series", "Subsets", "Index"])
