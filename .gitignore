@@ -1,5 +1,6 @@
-# Specific own file
+# Specific own files and folder
 RenNinjaToken.txt
+Output graphs/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
