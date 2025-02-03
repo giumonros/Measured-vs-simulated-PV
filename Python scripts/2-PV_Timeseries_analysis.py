@@ -5,24 +5,27 @@ import numpy as np
 import os
 import re
 import math
+import sys
 from sklearn.metrics import mean_absolute_error, mean_squared_error
 from matplotlib.colors import LinearSegmentedColormap
 
 #------------------------------------------------------------------------------------------
 
-# Define location name
-location_name = "Turin"  # This can be changed to any other location available in the Measured PV data folder
-location_year = "All years" # Write a specific year to avoid drawing graphs for all the years available the Measured PV data file)
+# Define location name and year
+location_name = sys.argv[1]
+location_year = sys.argv[2]
+#location_name = "Almeria"  # This can be changed to any other location available in the Measured PV data folder
+#location_year = "All years" # Write a specific year to avoid drawing graphs for all the years available the Measured PV data file
 
 #------------------------------------------------------------------------------------------
 
-# Create directory for saving graphs
-output_dir = "Output graphs"
+# Create directory or use the already existing directory for saving graphs 
+output_dir = "Results and graphs"
 os.makedirs(output_dir, exist_ok=True)
-output_dir_loc = os.path.join(output_dir,location_name)
-os.makedirs(output_dir_loc, exist_ok=True)
+output_dir_timeseries = os.path.join(output_dir,location_name,"Time series analysis results")
+os.makedirs(output_dir_timeseries, exist_ok=True)
 
-#Define file path for the simulated and measured PV data file
+#Define file path for the simulated and measured PV data file and read csv file
 file_path = os.path.join("Simulated and measured PV data", f"{location_name}_meas_sim.csv")
 data_sim_meas = pd.read_csv(file_path, header=None).iloc[:, 1:]  # Skip the first column and load without headers
 
@@ -68,7 +71,7 @@ data_sim_meas = data_sim_meas.iloc[:8760, :]
 data_sim_meas.columns = [' '.join(col).strip() for col in data_sim_meas.columns.values]
 data_sim_meas = data_sim_meas.apply(pd.to_numeric, errors='coerce', axis=1)  # Convert to numeric where possible
 
-# ********** Merge the ""simulated and measured PV data" and "Measured PV data" for the clear sky and cloudy day figure
+# ********** Merge the "Simulated and measured PV data" and "Measured PV data" for the clear sky and cloudy day figure
 
 ## Select which year of data should be kept based on the infos inside the input excel file
 
@@ -131,7 +134,7 @@ if columns_with_year:
     data_sim_meas = data_sim_meas[columns_with_year]
 else:
     ## Otherwise, retain all columns
-    print(f"No specific year chosen or year not available: plot for all years")
+    print(f"No specific year chosen or year not available: plot for all years instead")
 
 # ************ Custom settings for all the plots (colors, line styles, etc.) *********
 
@@ -140,7 +143,6 @@ locations = list(set(col.split()[0] for col in data_sim_meas.columns))
 #Identify unique time series for legend names
 legend_names = list(set(col.split()[1] for col in data_sim_meas.columns))
 #Legend names for the clear sky and cloudy day Figure
-
 legend_names_high_res = list(set(
     col.split()[1]
     for df in [cloudy_sky_df, clear_sky_df]  # Iterate over both DataFrames
@@ -239,7 +241,7 @@ plot_palette = {
     'PG3-ERA5': 'darkgoldenrod',
     'RN-SARAH': 'dodgerblue',
     'PG2-SARAH': 'gold',
-    'CR-ERA5': 'green',
+    'PG2-ERA5': 'green',
     'SIM-SELF1': 'purple',
 }
 
@@ -268,13 +270,13 @@ for location in locations:
         print(f"Skipping {location}: 'PV-MEAS' column missing.")
         continue
 
-    # Filter data to exclude rows with zero values in the measured data column
-    filtered_data = loc_data[loc_data[meas_column] != 0]
-    
-    # Further filter to exclude any simulation columns with only zero values
+    # Identify simulations columns with only zero values 
     valid_columns = [meas_column] + [col for col in loc_data.columns if col != meas_column and not loc_data[col].eq(0).all()]
-    filtered_data = filtered_data[valid_columns]
-    real_data = filtered_data[meas_column].squeeze()  # Measured
+    
+    # Filter data to exclude rows with zero values in the measured data column and simulation columns with only zero values (used for scatter plot only)
+    filtered_data_scat = loc_data[loc_data[meas_column] != 0]
+    filtered_data_scat = filtered_data_scat[valid_columns]
+    measured_data_scat = filtered_data_scat[meas_column].squeeze()  # Measured
 
     # ********************************************* Plot hourly capacity factors ********************************************************
     plt.figure(figsize=(10, 6))
@@ -292,7 +294,7 @@ for location in locations:
     plt.ylim(0, 1)
     plt.xlim(0, 5000)
     plt.legend(loc='upper right', fontsize=12)
-    plt.savefig(os.path.join(output_dir_loc, f"{location}_Capacity_Factors.png"), bbox_inches='tight')
+    plt.savefig(os.path.join(output_dir_timeseries, f"{location}_Capacity_Factors.png"), bbox_inches='tight')
     print(f"Capacity factors figure successfully generated in the '{output_dir}' folder for {location}")
     plt.close()
 
@@ -305,10 +307,10 @@ for location in locations:
 
     for idx, sim_col in enumerate(sim_columns):
         ax = axs[idx]
-        simulated_data = filtered_data[sim_col].squeeze()
-        sns.scatterplot(x=real_data, y=simulated_data, alpha=0.5, edgecolor='w', linewidth=0.5, label='Simulated data', s=15, ax=ax)
-        sns.kdeplot(x=real_data, y=simulated_data, fill=True, cmap=custom_cmap, levels=20, ax=ax)
-        sns.scatterplot(x=real_data, y=real_data, alpha=0.5, edgecolor='w', color='r', linewidth=0.5, label='Measured data', s=15, ax=ax)
+        simulated_data_scat = filtered_data_scat[sim_col].squeeze()
+        sns.scatterplot(x=measured_data_scat, y=simulated_data_scat, alpha=0.5, edgecolor='w', linewidth=0.5, label='Simulated data', s=15, ax=ax)
+        sns.kdeplot(x=measured_data_scat, y=simulated_data_scat, fill=True, cmap=custom_cmap, levels=20, ax=ax)
+        sns.scatterplot(x=measured_data_scat, y=measured_data_scat, alpha=0.5, edgecolor='w', color='r', linewidth=0.5, label='Measured data', s=15, ax=ax)
 
         ax.set_title(f"{location} - {sim_col.split()[1]}", fontsize=20)
         ax.set_xlabel('Measured Data', fontsize=18)
@@ -321,20 +323,20 @@ for location in locations:
         fig.delaxes(axs[j])
 
     plt.tight_layout()
-    plt.savefig(os.path.join(output_dir_loc, f'{location}_scatterplot.png'))
+    plt.savefig(os.path.join(output_dir_timeseries, f'{location}_scatterplot.png'))
     print(f"Scatter plot figure successfully generated in the '{output_dir}' folder for {location}")
     plt.close()
 
 # ************************************************************ Error analysis*********************************************************************  
-        # Calculate and store metrics for each simulation tool
+    # Calculate and store metrics for each simulation tool
     for sim_col in valid_columns:
         if sim_col != meas_column and any(tool in sim_col for tool in plot_palette.keys()):
-            simulated_data = loc_data[sim_col].dropna()
-            measured_data = loc_data[meas_column].dropna()
-            if not simulated_data.empty:
-                mean_diff = (simulated_data.mean() - measured_data.mean()) * 100
-                mae = mean_absolute_error(measured_data, simulated_data) * 100
-                rmse = np.sqrt(mean_squared_error(measured_data, simulated_data)) * 100
+            simulated_data_err_an = loc_data[sim_col].dropna()
+            measured_data_err_an = loc_data[meas_column].dropna()
+            if not simulated_data_err_an.empty:
+                mean_diff = (simulated_data_err_an.mean() - measured_data_err_an.mean()) * 100
+                mae = mean_absolute_error(measured_data_err_an, simulated_data_err_an) * 100
+                rmse = np.sqrt(mean_squared_error(measured_data_err_an, simulated_data_err_an)) * 100
                 mean_diff_results.append({'Location': location, 'Tool': sim_col.split()[1], 'Mean Difference (%)': mean_diff})
                 mae_results.append({'Location': location, 'Tool': sim_col.split()[1], 'MAE (%)': mae})
                 rmse_results.append({'Location': location, 'Tool': sim_col.split()[1], 'RMSE (%)': rmse})
@@ -343,24 +345,25 @@ for location in locations:
 def add_labels(ax):
     for p in ax.patches:  # Loop through all bars in the subplot
         height = p.get_height()  # Get the height (value) of the bar
-        if height >= 0:
-            # For positive values, place the label above the bar
-            ax.annotate(format(height, '.1f'),  # Format the label to one decimal place
-                        (p.get_x() + p.get_width() / 2., height),  # Position at the center of the bar
-                        ha='center',  # Center horizontally
-                        va='bottom',  # Align to the top of the bar
-                        xytext=(0, 5),  # 10 points above the bar
-                        textcoords='offset points',  # Use offset for positioning
-                        fontsize=11)  # Font size
-        else:
-            # For negative values, place the label below the bar
-            ax.annotate(format(height, '.1f'),  # Format the label to one decimal place
-                        (p.get_x() + p.get_width() / 2., height),  # Position at the center of the bar
-                        ha='center',  # Center horizontally
-                        va='bottom',  # Align to the bottom of the bar
-                        xytext=(0, 16),  # 10 points below the bar
-                        textcoords='offset points',  # Use offset for positioning
-                        fontsize=11)  # Font size
+        if abs(height) > 1e-3:  # Ignore near-zero bars to prevent "0.0" labels
+            if height >= 0:
+                # For positive values, place the label above the bar
+                ax.annotate(format(height, '.1f'),  # Format the label to one decimal place
+                            (p.get_x() + p.get_width() / 2., height),  # Position at the center of the bar
+                            ha='center',  # Center horizontally
+                            va='bottom',  # Align to the top of the bar
+                            xytext=(0, 5),  # 10 points above the bar
+                            textcoords='offset points',  # Use offset for positioning
+                            fontsize=11)  # Font size
+            else:
+                # For negative values, place the label below the bar
+                ax.annotate(format(height, '.1f'),  # Format the label to one decimal place
+                            (p.get_x() + p.get_width() / 2., height),  # Position at the center of the bar
+                            ha='center',  # Center horizontally
+                            va='bottom',  # Align to the bottom of the bar
+                            xytext=(0, 16),  # 10 points below the bar
+                            textcoords='offset points',  # Use offset for positioning
+                            fontsize=11)  # Font size
   
 # Create a figure with three subplots
 fig, axes = plt.subplots(3, 1, figsize=(16, 15))
@@ -422,15 +425,19 @@ add_labels(axes[2])
 # Adjust layout
 plt.tight_layout()
 
-# Create one legend for all plots at the bottom
+# Filter legend to only show labels in `legend_names`
 handles, labels = axes[2].get_legend_handles_labels()  # Use handles from the last subplot
+filtered_handles_labels = [(h, l) for h, l in zip(handles, labels) if l in legend_names]
+filtered_handles, filtered_labels = zip(*filtered_handles_labels) if filtered_handles_labels else ([], [])
+
+# Create one legend for all plots at the bottom
 fig.legend(
-    handles, labels, loc='lower center', ncol=len(tool_order),
+    filtered_handles, filtered_labels, loc='lower center', ncol=len(tool_order),
     bbox_to_anchor=(0.5, -0.05), fontsize=16, title_fontsize=18, frameon=False
 )
 
 # Save the combined plot
-combined_plot_path = os.path.join(output_dir_loc, f'{location_name}_Errors_Analysis.png')
+combined_plot_path = os.path.join(output_dir_timeseries, f'{location_name}_Errors_Analysis.png')
 plt.savefig(combined_plot_path, bbox_inches='tight')
 print(f"Combined error analysis figure successfully generated in the '{output_dir}' folder")
 plt.close()
@@ -502,9 +509,9 @@ def plot_data(df1, df2):
                ncol=ncol, fontsize=15)
 
     plt.tight_layout()  # Adjust rect to leave space for the legend
-    plt.savefig(os.path.join(output_dir_loc, f'{location_name}_sec_vs_hourly_graph.png'), bbox_inches='tight')
+    plt.savefig(os.path.join(output_dir_timeseries, f'{location_name}_sec_vs_hourly_graph.png'), bbox_inches='tight')
     plt.close()
-    print("High resolution PV data figure successfully generated in the 'Output graphs' folder")
+    print(f"High resolution PV data figure successfully generated in the '{output_dir}' folder for {location}")
 
 # Plotting both graphs side by side
 plot_data(clear_sky_df,cloudy_sky_df)

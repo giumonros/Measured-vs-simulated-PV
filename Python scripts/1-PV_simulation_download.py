@@ -3,14 +3,15 @@ import requests
 import io
 import time
 import os
+import sys
 
 #----------------------------------------------------------------------------------------------
 
 # Define location name (same as the one in the folder "Measured PV data") and renewables.ninja token
 
-location_name = "Utrecht"  # This can be changed to any other location available in the Measured PV data folder
-rn_token = 'Your token here'  # Replace with your Renewable.ninja token
-
+location_name = sys.argv[1]
+#location_name = "Almeria"  # This can be changed to any other location available in the Measured PV data folder
+rn_token = sys.argv[5]   # Replace with your Renewable.ninja token 
 #----------------------------------------------------------------------------------------------
 
 # By default the script will download the PV power simulations for all databases and versions of PVGIS and Renewables Ninja
