@@ -31,7 +31,7 @@ To share your PV power data, please follow these steps:
 
 6- If you have questions, you can also contact us by e-mail at [giulia.montanari@polito.it](mailto:giulia.montanari@polito.it) or [njbca@dtu.dk](mailto:njbca@dtu.dk).
 
-## Installation guide for the PV time series analysis and H2 techno-economic assessment tool
+## Installation guide to use the tool
 
 1- Download the "Measured-vs-simulated-PV" ZIP folder: go to the green 'Code' button on this page, and click on 'Download ZIP'. Unzip the folder. 
 You can also Fork this repository and clone it on your local machine with github (you can use [GitHub desktop](https://desktop.github.com/download/) to facilitate the process) 
@@ -61,20 +61,20 @@ python -m venv .venv
 pip install -r requirements.txt
 ```
 
-## Extracting simulated PV power production data
+## Set-up and run the scripts
 
-1- In VS code, open the "Measured-vs-simulated-PV" folder (File > Open Folder) and click on the ``FileToRun.py`` python file in the main folder
+1- In VS code, open the "Measured-vs-simulated-PV" folder (File > Open Folder) and click on the ``FileToRun.py`` python file
 
 2- Fill up the "User defined" informations:
 - Location: the name should match with one of the location in the ``Measured PV data`` folder
-- Years: by default all the years available in the ``Measured PV data`` for a specific location will be used. To select a specific year write i.e. "2019"
+- Years: by default all the years available in the ``Measured PV data`` for a specific location will be used. To select a specific year write i.e. "2019" (the year must exist in the measured data)
 - H2_end_user_min_load: for the H2 techno-economic assessment, define the flexibility of the hydrogen end-user choosing its minimal load between 0 and 1
 - Solver: selected solver for the H2 techno-economic assessment, HiGHS is free but Gurobi need to be installed on your machine with a valid license. To use others solvers, modify the ``3-H2_Technoceco_assessment-py`` script [(help)](https://coin-or.github.io/pulp/guides/how_to_configure_solvers.html)
 - Renewablesninja_token: follow step 3
 
 3- To generate profiles with [Renewables.ninja](https://www.renewables.ninja/), you have to set up a Renewable Ninja API token:
 - Visit Renewables.ninja's [registration page](https://www.renewables.ninja/register) and create an account
-- Once logged in go to your profile page(https://www.renewables.ninja/profile) to generate your API token
+- Once logged in go to your [profile page](https://www.renewables.ninja/profile) to generate your API token
 - Copy your API token 
 - In the code, paste your token in front of the rn_token variable: ``rn_token = 'your_token_here'``
 
