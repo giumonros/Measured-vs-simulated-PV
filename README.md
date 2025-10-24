@@ -1,15 +1,15 @@
 # Measured-vs-simulated-PV
 
 This repository has been created based on the work presented in this article: https://doi.org/10.1016/j.rser.2024.115044
-. The data used for the article are in the ``Publication data`` folder. The aim of this repository is to facilate the data sharing of measured PV profiles, compare measured and simulated PV power production data, and
+. The data used for the article are in the ``data/publication`` folder. The aim of this repository is to facilate the data sharing of measured PV profiles, compare measured and simulated PV power production data, and
 analyse the influence of using measured or simulated PV power data for e-fuel techno-economic assessments. 
 
 This repository contains:
-- Measured data from real photovoltaic (PV) plants (``Measured PV data``)
-- Python scripts for extracting PV power production data from PVGIS and Renewables.ninja, data analysis and graphs for PV power time series, and hydrogen based fuels techno-economic assessment (``Python scripts``)
-- Outputs files combining simulated and measured time series (``Simulated and measured PV data``)
-- Data required for hydrogen based e-fuel techno-economic assessments (``Techno-economic assessment data``)
-- PV power time series analysis and hydrogen systems techno-economic assessments results for measured and simulated data (``Results and graphs``)
+- Measured data from real photovoltaic (PV) plants (``data/measured_PV``)
+- Functions for extracting PV power production data from PVGIS and Renewables.ninja, data analysis and graphs for PV power time series, and hydrogen based fuels techno-economic assessment
+- Outputs files combining simulated and measured time series (``data``)
+- Data required for hydrogen based e-fuel techno-economic assessments (``data/techno-economic_assessment``)
+- PV power time series analysis and hydrogen systems techno-economic assessments results for measured and simulated data (``results``). Results appears once running the analysis.
 
 ## Sharing PV measured data
 
@@ -19,13 +19,13 @@ Higher resolution data can be shared but only two days are enough (one cloudy da
 
 To share your PV power data, please follow these steps:
 
-1- Go in the ``Measured PV data`` folder and download one of the existing excel file (for example the one called "Utrecht"): click on the file > click on the three dots on the top right of your screen > click download
+1- Go in the ``data/measured_PV`` folder and download one of the existing excel file (for example the one called "Utrecht"): click on the file > click on the three dots on the top right of your screen > click download
 
 2- Rename the excel file to your location and replace the required informations with yours
 
 3- Fork this repository (Top right of the screen, you need to create a GitHub account)
 
-4- Go inside the ``Measured PV data`` folder ; Click on "Add files" and "Upload files" ; Upload your new excel file
+4- Go inside the ``data/measured_PV` folder ; Click on "Add files" and "Upload files" ; Upload your new excel file
 
 5- Commit the changes, create a pull request, we will review it and after a while your data will be shared on the repository!
 
@@ -63,30 +63,24 @@ pip install -r requirements.txt
 
 ## Set-up and run the scripts
 
-1- In VS code, open the "Measured-vs-simulated-PV" folder (File > Open Folder) and click on the ``FileToRun.py`` python file
+1- In VS code, open the ``FileToRun.py`` python file
 
 2- Fill up the "User defined" informations:
-- Location: the name should match with one of the location in the ``Measured PV data`` folder
-- Years: by default all the years available in the ``Measured PV data`` for a specific location will be used. To select a specific year write i.e. "2019" (the year must exist in the measured data)
+- Location: the name should match with one of the location in the ``data/measured_PV`` folder
+- Year: Specific year to run the simulation (the year must exist in the measured data)
 - H2_end_user_min_load: for the H2 techno-economic assessment, define the flexibility of the hydrogen end-user choosing its minimal load between 0 and 1
-- Solver: selected solver for the H2 techno-economic assessment, HiGHS is free but Gurobi need to be installed on your machine with a valid license. To use others solvers, modify the ``3-H2_Technoceco_assessment-py`` script [(help)](https://coin-or.github.io/pulp/guides/how_to_configure_solvers.html)
+- Solver: selected solver for the H2 techno-economic assessment, HiGHS is free but Gurobi need to be installed on your machine with a valid license. To use others solvers, modify the ``src/H2_techno_eco/OptiPlant.py`` script [(help)](https://coin-or.github.io/pulp/guides/how_to_configure_solvers.html)
 - Renewablesninja_token: follow step 3
 
 3- To generate profiles with [Renewables.ninja](https://www.renewables.ninja/), you have to set up a Renewable Ninja API token:
 - Visit Renewables.ninja's [registration page](https://www.renewables.ninja/register) and create an account
 - Once logged in go to your [profile page](https://www.renewables.ninja/profile) to generate your API token
 - Copy your API token 
-- In the code, paste your token in front of the rn_token variable: ``rn_token = 'your_token_here'``
+- In the code, paste your token in front of the rn_token variable: ``rn_token = 'your-token-here'``
 
-4- Select which scripts to run (one at a time, or as a list, both works. Correct order should be respected)
-- ``1-PV_simulation_download.py`` activates Renewables.ninja and PVGIS APIs to generate simulated PV profiles for the selected location. Make sure that all necessary information are filled in the ``Measured PV data`` folder. The generated time seriesare combined with the measured ones and saved in the ``Simulated and measured PV data`` folder
-You can add a personalized simulation and use it for the graphs inserting a new column and writting "SIM-SELF1" in the "Profile time series" row 
-- ``2-PV_Timeseries_analysis.py`` conducts some solar PV timeseries analysis and plots graphs in the ``Results and graphs`` folder
-- ``3-H2_Technoeco_assessment.py`` performs hydrogen based fuels techno-economic assessments with measured and simulated data and write results in the ``Results and graphs`` folder. 
+4- Run the FileToRun.py file clicking on the small arrow on the top right of the VS Code window (make sure that you are running with the correct environment set-up in the installation step). A result folder will be created on your local machine.
+
 More advanced techno-economic assessments can also be performed using the ["OptiPlant"](https://github.com/njbca/OptiPlant/tool) tool 
-
-5- You can now run the script by clicking on the small arrow on the top right of the VS Code window (make sure that you are running with the correct environment set-up in the installation step)
-
 
 ## APIs Used and documentation
 This project integrates with two APIs to gather solar production data:

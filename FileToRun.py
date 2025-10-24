@@ -11,9 +11,9 @@ location = "Utrecht"  # Site name for the analysis (must be existing in the "mea
 year = "2017"  # Select a specific year for the analysis
 H2_end_user_min_load = 0  # Hydrogen end-user flexibility for the techno-economic assessment (minimal load between 0 and 1)
 solver = "GUROBI_CMD"  # Or HiGHS. To use other solvers modify the file '3-Techno-eco_assessment.py'
-renewablesninja_token = "357952a8676cd53bca5860e5ecafa180c8dc4879"  # Replace with your Renewables.ninja token to be able to use their API, e.g. "12345678910"
+renewablesninja_token = "your-token-here"  # Replace with your Renewables.ninja token to be able to use their API, e.g. "12345678910"
 
-Run_simulations = False
+Run_simulations = False #Change to True to run new simulations
 
 # --- Run pv simulations ---
 
@@ -32,8 +32,8 @@ else:
 generate_all_plots(
     location_name=location,
     year=year,
-    PV_sim = True,
-    LCOF_diff = True,
+    PV_sim = True, #Change to false to avoid doing or re-doing all the time series analysis graphs
+    LCOF_diff = True, #Change to false to avoid doing or re-doing the LCOF analysis
     H2_end_user_min_load = H2_end_user_min_load,
     solver_name = solver
 )
