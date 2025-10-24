@@ -1,4 +1,4 @@
-Subsets,Subsets_2,Type of units,Used (1 or 0),Legend flows,Yearly demand (kg fuel),Produced from,El balance,H2 balance,Max Capacity,Fuel production rate (kg output/kg input),Load min (% of max capacity),Electrical consumption (kWh/output),Investment (EUR/Capacity installed),Fixed cost (EUR/Capacity installed/y),Variable cost (EUR/Output),Annuity factor
+Subsets,Subsets_2,Type of units,Used (1 or 0),Legend flows,Yearly demand (kg fuel),Produced from,El balance,H2 balance,Max Capacity,Fuel production rate (kg output/kg input),Load min (percent of max capacity),Electrical consumption (kWh/output),Investment (EUR/Capacity installed),Fixed cost (EUR/Capacity installed/y),Variable cost (EUR/Output),Annuity factor
 Product,Min_demand_MainFuel,H2 user (ammonia plant),1,Ammonia produced (H2 end-user) (kg/h),100000000,Reactant2,0,0,0,5.55,0.4,0.38,4192,436,0,0.093678779
 Reactant1,NoSubset,Water supply,1,Water supply (kg/h),0,-,0,0,0,0,0,0,0,0,0,0
 Product,NoSubset,Electrolyser AEC,1,H2_from_AEC (kg/h),0,Reactant1,0,1,0,0.11235,0,51.5,56467,1129,0,0.093678779

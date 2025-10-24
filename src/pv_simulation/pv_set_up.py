@@ -1,7 +1,7 @@
 import os
 import pandas as pd
 
-def load_pv_setup(location_name: str, measured_dir="Measured PV data"):
+def load_pv_setup(location_name: str, measured_dir="data/measured_PV"):
     """
     Load PV plant setup data from the Excel file and return as a dictionary of parameters.
     """

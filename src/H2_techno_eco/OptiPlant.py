@@ -1,77 +1,11 @@
-import pandas as pd
-import os
 import numpy as np
-import seaborn as sns
-import matplotlib.pyplot as plt
-import sys
+import pandas as pd
 from pulp import LpProblem, LpVariable, LpMinimize, lpSum, LpStatus, value, getSolver
-
-# ------------------------------------------------------------------------------------------
-
-# Define location name
-location_name = sys.argv[1]
-location_year = sys.argv[2]
-H2_end_user_min_load = float(
-    sys.argv[3]
-)  # Values used in the publication are 0, 0.4 or 1
-solver_name = sys.argv[4]
-
-# location_name = "Almeria"  # This can be changed to any other location available in the Measured PV data folder
-# location_year = "All years" # Write a specific year to avoid drawing graphs for all the years available the Measured PV data file
-# H2_end_user_min_load = 0 # Define hydrogen end-user flexibility (minimal load between 0 and 1). Values used in the publication are 0, 0.4 or 1
-
-# Solver
-# solver = getSolver('HiGHS') # Solving with HiGHS should take around 180 seconds per run
-solver = getSolver(
-    solver_name
-)  # Solving should takes around 20 seconds per run #Gurobi have to be installed on your computer with a valid license to work
-
-# ----------------------------------------------------------------------------------------------
-
-# Create directory or use the already existing directory for saving graphs and csv files
-output_dir = "Results and graphs"
-os.makedirs(output_dir, exist_ok=True)
-output_dir_technoeco = os.path.join(
-    output_dir, location_name, "Techno-eco assessments results"
-)
-os.makedirs(output_dir_technoeco, exist_ok=True)
-output_dir_technoeco_syst = os.path.join(
-    output_dir,
-    location_name,
-    "Techno-eco assessments results",
-    f"End-user flex[{H2_end_user_min_load}-1]",
-    "System size and costs",
-)
-os.makedirs(output_dir_technoeco_syst, exist_ok=True)
-output_dir_flows = os.path.join(
-    output_dir,
-    location_name,
-    "Techno-eco assessments results",
-    f"End-user flex[{H2_end_user_min_load}-1]",
-    "Hourly profiles",
-)
-os.makedirs(output_dir_flows, exist_ok=True)
-
-
-# Define file path for the simulated and measured PV data file and read the file
-folder_profiles = "Simulated and measured PV data"
-file_profiles_list = f"{location_name}_meas_sim.csv"
-folder_technoeco = "Techno-economic assessment data"
-file_technoeco = "Techno-eco_data_NH3.csv"
 
 # Define a function to read csv files (useful to simpliy the writting of the techno-economic optimization function)
 
 
-def read_csv(file_path, selected_file):
-    full_path = os.path.join(file_path, selected_file)
-    if not os.path.exists(full_path):
-        raise FileNotFoundError(f"File not found: {full_path}")
-    data = pd.read_csv(full_path)
-    data = data.fillna(0)
-    return data
-
-
-def solve_optiplant(file_technoeco, PV_profile, H2_end_user_min_load):
+def solve_optiplant(data_units, PV_profile, H2_end_user_min_load, solver_name):
     TMstart = 4000
     TMend = 4001
     Tbegin = 240
@@ -96,7 +30,6 @@ def solve_optiplant(file_technoeco, PV_profile, H2_end_user_min_load):
     # -------------------------- Read and format data ------------------------------
 
     # --------------Techno-economics data--------------------
-    data_units = read_csv(folder_technoeco, file_technoeco)
 
     # Subsets and related data
     subsets = data_units["Subsets"].tolist()
@@ -150,7 +83,7 @@ def solve_optiplant(file_technoeco, PV_profile, H2_end_user_min_load):
         "H2 balance",
         "El balance",
         "Max Capacity",
-        "Load min (% of max capacity)",
+        "Load min (percent of max capacity)",
         "Electrical consumption (kWh/output)",
         "Fuel production rate (kg output/kg input)",
         "Investment (EUR/Capacity installed)",
@@ -177,7 +110,7 @@ def solve_optiplant(file_technoeco, PV_profile, H2_end_user_min_load):
     el_balance = data_units["El balance"].tolist()
     # max_cap = data_units["Max Capacity"].tolist()  # Maximum capacity that can be installed
     load_min = data_units[
-        "Load min (% of max capacity)"
+        "Load min (percent of max capacity)"
     ].tolist()  # Minimum load of the unit
     sc_nom = data_units[
         "Electrical consumption (kWh/output)"
@@ -314,6 +247,10 @@ def solve_optiplant(file_technoeco, PV_profile, H2_end_user_min_load):
 
     # ------------------------- Solve the Model -------------------------
 
+    # Solver
+    # solver = getSolver('HiGHS') # Solving with HiGHS should take around 180 seconds per run
+    solver = getSolver(solver_name)  # Solving should takes around 20 seconds per run #Gurobi have to be installed on your computer with a valid license to work
+
     model_lp.solve(solver)  # Default solver (cbc)
 
     # ---------------------- Results Output ----------------------
@@ -442,250 +379,3 @@ def solve_optiplant(file_technoeco, PV_profile, H2_end_user_min_load):
         )
 
     return fuel_cost, df_results, df_flows
-
-
-# ------------------------------- Plot the LCOF graph and save the multiple csv results----------------------
-
-# Read file with measured and simulated power profiles
-data_sim_meas = read_csv(folder_profiles, file_profiles_list)
-
-# Function to extract a specific row number
-
-
-def get_row_number(data_file, row_name):
-    # Find the row index where 'Index' is located
-    idx_row = data_file[data_file.iloc[:, 0] == row_name].index
-    if len(idx_row) == 0:
-        raise ValueError(f"Could not find {row_name} row in the file.")
-    idx_row = idx_row[0]
-
-    return idx_row
-
-
-# Extract the relevant row indexes from the file
-index_row = get_row_number(data_sim_meas, "Index")
-profile_time_series_row = get_row_number(data_sim_meas, "Profile time series")
-locations_row = get_row_number(data_sim_meas, "Locations")
-selected_rows_for_headers = data_sim_meas.iloc[[locations_row, profile_time_series_row]]
-
-# Define color palette for bar plots with LCOF
-plot_palette = {
-    'RN-MERRA2': 'blue',
-    'RN-SARAH': 'dodgerblue',
-    'PG2-SARAH': 'gold',
-    'PG2-SARAH2': 'orange',
-    'PG3-SARAH3': 'sienna',
-    'PG2-ERA5': 'limegreen',
-    'PG3-ERA5': 'green',
-    'SIM-SELF1': 'purple'
-}
-
-# Extract headers from the rows above 'Index'
-# headers = data_sim_meas.iloc[:index_row].T.fillna("").agg(" ".join, axis=1)  # Merge multi-headers into a single row
-headers = selected_rows_for_headers.T.fillna("").agg(" ".join, axis=1)
-# Assign the new headers to the DataFrame
-data_sim_meas.columns = headers
-
-# Remove the first column
-data_sim_meas = data_sim_meas.iloc[:, 1:]
-
-# Remove the years that are not wanted for the figures (user defined)
-
-## Check if any column name contains the user specified year
-columns_with_year = [col for col in data_sim_meas.columns if location_year in col]
-
-## If columns are found for the specified year, keep only those
-if columns_with_year:
-    data_sim_meas = data_sim_meas[columns_with_year]
-else:
-    ## Otherwise, retain all columns
-    print(f"No specific year chosen or year not available: plot for all years instead")
-
-# Identify unique locations
-locations = list(set(col.split()[0] for col in data_sim_meas.columns))
-# Identify unique time series for legend names
-legend_names = list(set(col.split()[1] for col in data_sim_meas.columns))
-
-# Keep only data below 'Index'
-data_sim_meas = data_sim_meas.iloc[index_row + 1 :].reset_index(drop=True)
-
-# Convert all values to numeric
-data_sim_meas = data_sim_meas.apply(pd.to_numeric, errors="coerce")
-
-# Initialize LCOF_diff results
-LCOF_diff_results = []
-
-# Process data for each location and year
-for location in locations:
-    # Filter columns for the current location
-    loc_data = data_sim_meas[[col for col in data_sim_meas.columns if location in col]]
-
-    # Identify 'PV-MEAS' column as the measured data
-    meas_column = next((col for col in loc_data.columns if "PV-MEAS" in col), None)
-    if meas_column is None:
-        print(f"Skipping {location}: 'PV-MEAS' column missing.")
-        continue
-    # Perform the techno-economic assessment with the measured data
-    measured_profile_LCOF = loc_data[[meas_column]].dropna()
-    LCOF_meas, df_results_meas, df_flows_meas = solve_optiplant(
-        file_technoeco, measured_profile_LCOF, H2_end_user_min_load
-    )
-    output_file_tech_meas = f"{meas_column}.csv"
-    df_results_meas.to_csv(
-        os.path.join(output_dir_technoeco_syst, output_file_tech_meas), index=False
-    )
-    output_file_flow_meas = f"{meas_column}.csv"
-    df_flows_meas.to_csv(
-        os.path.join(output_dir_flows, output_file_flow_meas), index=False
-    )
-
-    # Identify simulations columns with only zero values
-    valid_columns = [meas_column] + [
-        col
-        for col in loc_data.columns
-        if col != meas_column and not loc_data[col].eq(0).all()
-    ]
-
-    # Calculate and store LCOF for each simulation tool/time series
-    for sim_column in valid_columns:
-        if sim_column != meas_column and any(
-            tool in sim_column for tool in plot_palette.keys()
-        ):
-            simulated_profile_LCOF = loc_data[[sim_column]].dropna()
-            LCOF_sim, df_results_sim, df_flows_sim = solve_optiplant(
-                file_technoeco, simulated_profile_LCOF, H2_end_user_min_load
-            )
-            output_file_tech_sim = f"{sim_column}.csv"
-            df_results_sim.to_csv(
-                os.path.join(output_dir_technoeco_syst, output_file_tech_sim),
-                index=False,
-            )
-            output_file_flow_sim = f"{sim_column}.csv"
-            df_flows_sim.to_csv(
-                os.path.join(output_dir_flows, output_file_flow_sim), index=False
-            )
-            LCOF_diff = (LCOF_sim - LCOF_meas) / LCOF_meas * 100
-            LCOF_diff_results.append(
-                {
-                    "Location": location,
-                    "Tool": sim_column.split()[1],
-                    "LCOF Difference (%)": LCOF_diff,
-                }
-            )
-
-# Plot for LCOF error analysis
-
-
-def add_labels(ax):
-    for p in ax.patches:
-        height = p.get_height()
-        if abs(height) > 1e-3:  # Ignore near-zero bars to prevent "0.0" labels
-            if height >= 0:
-                ax.annotate(
-                    format(height, ".1f"),
-                    (p.get_x() + p.get_width() / 2.0, height),
-                    ha="center",
-                    va="bottom",
-                    xytext=(0, 5),
-                    textcoords="offset points",
-                    fontsize=11,
-                )
-            else:
-                ax.annotate(
-                    format(height, ".1f"),
-                    (p.get_x() + p.get_width() / 2.0, height),
-                    ha="center",
-                    va="top",
-                    xytext=(0, -5),
-                    textcoords="offset points",
-                    fontsize=11,
-                )
-
-
-# Extract the tool order from the palette (ensures tools are plotted in this specific order)
-tool_order = list(plot_palette.keys())
-
-# Create dataframe for plotting
-LCOF_diff_df = pd.DataFrame(LCOF_diff_results)
-# Sort DataFrames by Location
-LCOF_diff_df.sort_values(by="Location", inplace=True)
-
-# Compute min and max values with padding
-y_min = LCOF_diff_df["LCOF Difference (%)"].min()
-y_max = LCOF_diff_df["LCOF Difference (%)"].max()
-padding = (y_max - y_min) * 0.3  # 30% padding
-
-# Ensure zero is always visible on the y-axis
-y_min = min(0, y_min - padding)
-y_max = max(0, y_max + padding)
-
-# Check if LCOF Difference values are mostly negative
-mostly_negative = np.median(LCOF_diff_df["LCOF Difference (%)"]) < 0
-
-# Create the figure
-plt.figure(figsize=(10, 6))
-
-# Define tick font size
-tick_font_size = 16
-
-# Plot LCOF Difference
-ax = sns.barplot(
-    x="Location",
-    y="LCOF Difference (%)",
-    hue="Tool",
-    data=LCOF_diff_df,
-    palette=plot_palette,
-    hue_order=tool_order,
-)
-
-# Customize plot
-ax.set_ylabel("LCOF difference (%)", fontsize=20)
-ax.tick_params(axis="both", labelsize=tick_font_size)
-ax.set_axisbelow(True)
-ax.grid(True, axis="y")
-ax.yaxis.set_major_formatter(plt.FuncFormatter(lambda x, _: f"{x:.1f}"))
-ax.set_ylim(y_min, y_max)
-ax.set_xlabel("")
-
-# Add labels
-add_labels(ax)
-
-# Move x-axis labels above if mostly negative
-if mostly_negative:
-    ax.xaxis.set_label_position("top")
-    ax.xaxis.tick_top()
-    plt.subplots_adjust(top=0.85)
-
-# Filter legend to only show labels in `legend_names`
-handles, labels = ax.get_legend_handles_labels()
-filtered_handles_labels = [(h, l) for h, l in zip(handles, labels) if l in legend_names]
-filtered_handles, filtered_labels = (
-    zip(*filtered_handles_labels) if filtered_handles_labels else ([], [])
-)
-
-# Add filtered legend below the figure
-legend = ax.legend(
-    filtered_handles,
-    filtered_labels,
-    loc="upper center",
-    bbox_to_anchor=(0.5, -0.05),
-    ncol=3,
-    fontsize=16,
-    title_fontsize=18,
-    frameon=False,
-)
-
-# Adjust layout
-plt.tight_layout()
-
-# Save the figure
-plt.savefig(
-    os.path.join(
-        output_dir_technoeco,
-        f"{location_name}_LCOF_diff_flex[{H2_end_user_min_load}-1].png",
-    )
-)
-print(
-    f"LCOF difference figure successfully generated in the '{output_dir}' folder for {location_name}"
-)
-plt.close()
