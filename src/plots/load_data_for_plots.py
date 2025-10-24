@@ -83,16 +83,18 @@ def load_plot_data(location_name: str, year: str, techno_file_name = "Techno-eco
     cloudy_sky_df = merge_with_highres(cloudy_sky_df, data_sim_meas)
 
     # -------------------- Filter by year (if specified) --------------------
-    if year.lower() != "all years":
-        columns_with_year = [col for col in data_sim_meas.columns if year in col]
-        if columns_with_year:
-            data_sim_meas = data_sim_meas[columns_with_year]
-        else:
-            print(f"No specific year chosen or year not available: plotting all years instead.")
+    columns_with_year = [col for col in data_sim_meas.columns if year in col]
+    if columns_with_year:
+        data_sim_meas = data_sim_meas[columns_with_year]
+        year_not_available = False
+    else:
+        print(f"No measured data for the year chosen")
+        year_not_available = True
 
     return (
         data_sim_meas,
         clear_sky_df,
         cloudy_sky_df,
-        data_units
+        data_units,
+        year_not_available
     )

@@ -7,8 +7,8 @@ from src.plots.plot_all import generate_all_plots
 import os
 
 # ---------------User defined----------------
-location = "Almeria"  # Site name for the analysis (must be existing in the "measured data folder")
-year = "2023"  # Select a specific year for the analysis
+location = "Utrecht"  # Site name for the analysis (must be existing in the "measured data folder")
+year = "2017"  # Select a specific year for the analysis
 H2_end_user_min_load = 0  # Hydrogen end-user flexibility for the techno-economic assessment (minimal load between 0 and 1)
 solver = "GUROBI_CMD"  # Or HiGHS. To use other solvers modify the file '3-Techno-eco_assessment.py'
 renewablesninja_token = "357952a8676cd53bca5860e5ecafa180c8dc4879"  # Replace with your Renewables.ninja token to be able to use their API, e.g. "12345678910"

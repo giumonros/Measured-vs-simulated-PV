@@ -25,7 +25,7 @@ def generate_all_plots(location_name: str, year: str, output_root: str = "result
     location_name : str
         Name of the location (e.g., "Turin").
     year : str
-        Year of data to plot (e.g., "2020" or "All years").
+        Year of data to plot.
     output_root : str, optional
         Root output directory to store results. Default is "results".
     """
@@ -43,8 +43,15 @@ def generate_all_plots(location_name: str, year: str, output_root: str = "result
         output_dir_flows = os.path.join(output_dir_technoeco, f"End-user flex[{H2_end_user_min_load}-1]","Hourly profiles")
         os.makedirs(output_dir_flows, exist_ok=True)
 
+    
+
     # -------------------- Load data --------------------
-    data_sim_meas, clear_sky_df, cloudy_sky_df, data_units = load_plot_data(location_name, year)
+    data_sim_meas, clear_sky_df, cloudy_sky_df, data_units, year_not_available = load_plot_data(location_name, year)
+    
+    # Exit if the year or the location does not exist in the measured files
+    if year_not_available == True:
+        return
+
 
     # ----------------- Get legend names for capacity factor, error metrics, LCOF and high-res plots------------
     legend_names, legend_names_high_res = get_legend_names(data_sim_meas, clear_sky_df, cloudy_sky_df)
