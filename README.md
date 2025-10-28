@@ -6,39 +6,29 @@ analyse the influence of using measured or simulated PV power data for e-fuel te
 
 This repository contains:
 - Measured data from real photovoltaic (PV) plants (``data/measured_PV``)
-- Functions for extracting PV power production data from PVGIS and Renewables.ninja, data analysis and graphs for PV power time series, and hydrogen based fuels techno-economic assessment
-- Outputs files combining simulated and measured time series (``data``)
 - Data required for hydrogen based e-fuel techno-economic assessments (``data/techno-economic_assessment``)
+- Outputs files combining simulated and measured time series (``data``)
+
+- Functions for extracting PV power production data from PVGIS and Renewables.ninja, data analysis and graphs for PV power time series, and hydrogen based fuels techno-economic assessment
 - PV power time series analysis and hydrogen systems techno-economic assessments results for measured and simulated data (``results``). Results appears once running the analysis.
 
 ## Sharing PV measured data
 
-If you have high resolution PV **power** measurement data that you can make public, you can share it here!
-We do not need the time series with all the data points but **only the normalized hourly aggregated values**. 
+We would like to expand our study to other sites, so if you are allowed to publicly share high resolution PV power measurement data that help us a lot!
+
+We do not need all the data points but **the normalized hourly aggregated values**. 
 Higher resolution data can be shared but only two days are enough (one cloudy day and one sunny day).
 
-To share your PV power data, please follow these steps:
-
-1- Go in the ``data/measured_PV`` folder and download one of the existing excel file (for example the one called "Utrecht"): click on the file > click on the three dots on the top right of your screen > click download
-
-2- Rename the excel file to your location and replace the required informations with yours
-
-3- Fork this repository (Top right of the screen, you need to create a GitHub account)
-
-4- Go inside the ``data/measured_PV` folder ; Click on "Add files" and "Upload files" ; Upload your new excel file
-
-5- Commit the changes, create a pull request, we will review it and after a while your data will be shared on the repository!
-
-6- If you have questions, you can also contact us by e-mail at [giulia.montanari@polito.it](mailto:giulia.montanari@polito.it) or [njbca@dtu.dk](mailto:njbca@dtu.dk).
+To share PV power data, please contact us at [giulia.montanari@polito.it](mailto:giulia.montanari@polito.it) or [njbca@dtu.dk](mailto:njbca@dtu.dk).
 
 ## Installation guide to use the tool
 
 1- Download the "Measured-vs-simulated-PV" ZIP folder: go to the green 'Code' button on this page, and click on 'Download ZIP'. Unzip the folder. 
 You can also Fork this repository and clone it on your local machine with github (you can use [GitHub desktop](https://desktop.github.com/download/) to facilitate the process) 
 
-2- Download and install [Python](https://www.python.org/downloads/). Add Python to PATH **ONLY if** you had VS Code already installed
+2- Download and install the code editor [VSCode](https://code.visualstudio.com/). Make sure to select the "Add to PATH" option when installing 
 
-3- Download and install the code editor [VSCode](https://code.visualstudio.com/). Make sure to select the "Add to PATH" option when installing 
+3- Download and install [Python](https://www.python.org/downloads/).
 
 4- Add the *Python* extension in the code editor (in "Extensions marketplace" on the left sidebar)
 
