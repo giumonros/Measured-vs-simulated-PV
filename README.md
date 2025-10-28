@@ -55,6 +55,14 @@ python -m venv .venv
 .venv\Scripts\Activate.ps1
 ```
 
+**Note** (from [here](https://docs.python.org/3/library/venv.html))
+
+On Microsoft Windows, it may be required to enable the Activate.ps1 script by setting the execution policy for the user. You can do this by issuing the following PowerShell command:
+
+``` bash
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+```
+
 8- Install the required libraries in this environment writting in the terminal:
 
 ``` bash
