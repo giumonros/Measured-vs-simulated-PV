@@ -10,7 +10,7 @@ import os
 location = "Utrecht"  # Site name for the analysis (must be existing in the "measured data folder")
 year = "2017"  # Select a specific year for the analysis
 H2_end_user_min_load = 0  # Hydrogen end-user flexibility for the techno-economic assessment (minimal load between 0 and 1)
-solver = "GUROBI_CMD"  # Or HiGHS. To use other solvers modify the file '3-Techno-eco_assessment.py'
+solver = "HiGHS"  # HiGHS or GUROBI_CMD. To use other solvers modify the file '3-Techno-eco_assessment.py'
 renewablesninja_token = "your-token-here"  # Replace with your Renewables.ninja token to be able to use their API, e.g. "12345678910"
 
 Run_simulations = False #Change to True to run new simulations
