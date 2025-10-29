@@ -1,8 +1,16 @@
 import os
-from src.H2_techno_eco.OptiPlant import solve_optiplant
+import pandas as pd
+from pathlib import Path
+from measimren.h2_techno_eco.OptiPlant import solve_optiplant
 
-def calculate_all_LCOF_diff(data_sim_meas, data_units, location_name, H2_end_user_min_load,solver_name,
-                        plot_palette, output_dir_technoeco_syst, output_dir_flows):
+def calculate_all_LCOF_diff(
+    data_sim_meas,
+    location_name,
+    H2_end_user_min_load,
+    solver_name,
+    technoeco_file_name = "Techno_eco_data_NH3"
+):
+    
     """
     Function to calculate the LCOF difference between measured and simulated data for each location.
 
@@ -10,13 +18,30 @@ def calculate_all_LCOF_diff(data_sim_meas, data_units, location_name, H2_end_use
     data_sim_meas (pd.DataFrame): DataFrame containing both simulated and measured data.
     data_units (str): Filepath for the techno-economic model.
     H2_end_user_min_load (float): Minimum load for H2 end user.
-    plot_palette (dict): Dictionary containing the simulation tools for plotting.
-    output_dir_technoeco_syst (str): Directory to store techno-economic results.
-    output_dir_flows (str): Directory to store flow results.
 
     Returns:
     LCOF_diff_results (list): List of dictionaries containing LCOF differences for each location and tool.
     """
+    
+    # -------------------- Create output directories --------------------
+    output_dir_technoeco = os.path.join("results", location_name, "Techno-eco assessments results")
+    output_dir_technoeco_syst = os.path.join(output_dir_technoeco, f"End-user flex[{H2_end_user_min_load}-1]", "System size and costs")
+    output_dir_flows = os.path.join(output_dir_technoeco, f"End-user flex[{H2_end_user_min_load}-1]", "Hourly profiles")
+    os.makedirs(output_dir_technoeco_syst, exist_ok=True)
+    os.makedirs(output_dir_flows, exist_ok=True)
+
+    # Get package root (two levels up from this file)
+    package_root = Path(__file__).resolve().parent.parent
+    technoeco_dir = package_root / "data" / "techno_economic_assessment"
+
+    # Build full path to the Excel file
+    file_path_technoeco  = technoeco_dir / f"{technoeco_file_name}.csv"
+
+    if not file_path_technoeco.exists():
+        raise FileNotFoundError(f"Techno-economic file not found: {file_path_technoeco}")
+
+    data_units = pd.read_csv(file_path_technoeco)
+
     LCOF_diff_results = []
 
     # Filter columns for the current location
@@ -25,7 +50,8 @@ def calculate_all_LCOF_diff(data_sim_meas, data_units, location_name, H2_end_use
     # Identify 'PV-MEAS' column as the measured data
     meas_column = next((col for col in loc_data.columns if "PV-MEAS" in col), None)
     if meas_column is None:
-        print(f"Skipping {location_name}: 'PV-MEAS' column missing.")
+        print(f"No measured data for {location_name}")
+        return
 
     # Perform the techno-economic assessment with the measured data
     measured_profile_LCOF = loc_data[[meas_column]].dropna()
@@ -52,9 +78,7 @@ def calculate_all_LCOF_diff(data_sim_meas, data_units, location_name, H2_end_use
 
     # Calculate and store LCOF for each simulation tool/time series
     for sim_column in valid_columns:
-        if sim_column != meas_column and any(
-            tool in sim_column for tool in plot_palette.keys()
-        ):
+        if sim_column != meas_column:
             simulated_profile_LCOF = loc_data[[sim_column]].dropna()
             LCOF_sim, df_results_sim, df_flows_sim = solve_optiplant(
                 data_units, simulated_profile_LCOF, H2_end_user_min_load, solver_name

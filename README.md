@@ -14,7 +14,7 @@ This repository contains:
 
 ## Sharing PV measured data
 
-We would like to expand our study to other sites, so if you are allowed to publicly share high resolution PV power measurement data that help us a lot!
+We would like to expand our study to other sites, so if you are allowed to publicly share high resolution PV power measurement data that would help us a lot!
 
 We do not need all the data points but **the normalized hourly aggregated values**. 
 Higher resolution data can be shared but only two days are enough (one cloudy day and one sunny day).

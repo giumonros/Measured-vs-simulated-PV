@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import pandas as pd
 import numpy as np
-import src.plots.plot_style_config as style_config
+from measimren.plotting import plot_style_config as style_config
 
 #------------------- Plot capacity factor duration curve -------------------------
 
@@ -57,25 +57,6 @@ def plot_capacity_factors(data_sim_meas, location_name, year, legend_names, colo
     plt.close()
     
     print(f"Capacity factors figure successfully saved at '{output_file}'")
-
-def get_legend_names(data_sim_meas, clear_sky_df, cloudy_sky_df):
-    # ------------------------------------------------------------------------------------
-    # Identify legend names based on column structure
-    # ------------------------------------------------------------------------------------
-    legend_names = sorted(set(col.split()[1] for col in data_sim_meas.columns))
-
-        # ------------------------------------------------------------------------------------
-    # Identify all unique legend names across both dataframes
-    # ------------------------------------------------------------------------------------
-    legend_names_high_res = sorted(
-        set(
-            col.split()[1]
-            for df in [clear_sky_df, cloudy_sky_df]
-            for col in df.columns
-            if len(col.split()) == 2  # Only two-part column names (e.g., "Almeria PV-MEAS")
-        )
-    )
-    return legend_names, legend_names_high_res
 
 def capacity_factor_formatting(
     legend_names,
@@ -506,7 +487,7 @@ def highres_plot_formatting(
 # Plot LCOF error bar chart
 
 def plot_LCOF_diff(LCOF_diff_results, plot_palette, location_name, year, H2_end_user_min_load,
-                   output_dir_technoeco, legend_names=None):
+                   output_dir_technoeco, legend_names):
     """
     Function to plot LCOF difference for error analysis and save the figure.
 
@@ -516,7 +497,7 @@ def plot_LCOF_diff(LCOF_diff_results, plot_palette, location_name, year, H2_end_
     location_name (str): The location name used for saving the plot.
     H2_end_user_min_load (float): Minimum load for H2 end user, included in the figure filename.
     output_dir_technoeco (str): Directory to save the plot.
-    legend_names (list, optional): List of legend names to filter the plot legend. Default is None.
+    legend_names (list): List of legend names to filter the plot legend
 
     Returns:
     None
@@ -585,7 +566,7 @@ def plot_LCOF_diff(LCOF_diff_results, plot_palette, location_name, year, H2_end_
     )
 
     # Customize plot
-    ax.set_ylabel("LCOF difference (%)", fontsize=20)
+    ax.set_ylabel("LCOF Difference (%) (measured PV vs simulated)", fontsize=20)
     ax.tick_params(axis="both", labelsize=tick_font_size)
     ax.set_axisbelow(True)
     ax.grid(True, axis="y")

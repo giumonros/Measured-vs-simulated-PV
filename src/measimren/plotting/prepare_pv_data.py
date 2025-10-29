@@ -2,6 +2,7 @@ import os
 import re
 import pandas as pd
 import numpy as np
+from pathlib import Path
 
 def convert_comma_to_dot(df: pd.DataFrame) -> pd.DataFrame:
     """Convert columns with commas as decimals to numeric floats."""
@@ -26,7 +27,7 @@ def extract_year_selected(dataframe: pd.DataFrame, column_pattern=r"([A-Za-z]+[0
     )
 
 
-def load_plot_data(location_name: str, year: str, techno_file_name = "Techno-eco_data_NH3"):
+def prepare_pv_data_for_plots(location_name: str, year: str):
     """
     Load and preprocess all data required for generating PV performance plots.
 
@@ -48,15 +49,22 @@ def load_plot_data(location_name: str, year: str, techno_file_name = "Techno-eco
     """
 
     # -------------------- Load data files --------------------
-    file_path_sim_meas = os.path.join("data", f"{location_name}_meas_sim.csv")
+
+    # Get package root (two levels up from this file)
+    package_root = Path(__file__).resolve().parent.parent
+    measured_dir = package_root / "data" / "measured_PV"
+
+    # Build full path to the Excel file
+    file_path_pvdata  = measured_dir / f"{location_name}.xlsx"
+
+    if not file_path_pvdata.exists():
+        raise FileNotFoundError(f"Measured PV file not found: {file_path_pvdata}")
+    
+    file_path_sim_meas = os.path.join("results",location_name, "simulated_pv", f"{location_name}_meas_sim.csv")
     data_sim_meas = pd.read_csv(file_path_sim_meas)
 
-    file_path_pvdata = os.path.join("data/measured_PV", f"{location_name}.xlsx")
     clear_sky_df = pd.read_excel(file_path_pvdata, sheet_name="Clear sky day")
     cloudy_sky_df = pd.read_excel(file_path_pvdata, sheet_name="Cloudy sky day")
-
-    file_technoeco = os.path.join("data/techno-economic_assessment",f"{techno_file_name}.csv")
-    data_units = pd.read_csv(file_technoeco)
 
     # -------------------- Preprocess measured PV data --------------------
     clear_sky_df = convert_comma_to_dot(clear_sky_df)
@@ -86,15 +94,12 @@ def load_plot_data(location_name: str, year: str, techno_file_name = "Techno-eco
     columns_with_year = [col for col in data_sim_meas.columns if year in col]
     if columns_with_year:
         data_sim_meas = data_sim_meas[columns_with_year]
-        year_not_available = False
     else:
         print(f"No measured data for the year chosen")
-        year_not_available = True
+        data_sim_meas = data_sim_meas.iloc[0:0]
 
     return (
         data_sim_meas,
         clear_sky_df,
-        cloudy_sky_df,
-        data_units,
-        year_not_available
+        cloudy_sky_df
     )

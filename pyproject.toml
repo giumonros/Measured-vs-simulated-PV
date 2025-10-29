@@ -1,0 +1,36 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "measimren"
+version = "0.0.1"
+maintainers = [
+  { name="Nicolas Campion", email="ncampion@protonmail.com"},
+  { name="Giulia Montanari"},
+]
+authors = [
+  { name="Nicolas Campion", email="ncampion@protonmail.com"},
+  { name="Giulia Montanari"},
+]
+description = "A package for comparing measured with simulated renewable power data and study error propagation"
+readme = "README.md"
+requires-python = ">=3.10"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent"
+]
+
+license = "MIT"
+license-files = ["./LICENSE*"]
+dependencies = ['pandas>=2.1.4', 'matplotlib>=3.9.0', 'geopandas>=0.14.4', 
+                'gamsapi[transfer]>=45.7.0', 'ipywidgets>=8.1.3', 'cartopy>=0.24.1', 'eel>=0.17.0']
+
+[project.urls]
+Repository = "https://github.com/giumonros/Measured-vs-simulated-PV"
+Issues = "https://github.com/giumonros/Measured-vs-simulated-PV/issues"
+
+[tool.setuptools.package-data]
+"measimren" = ["data/measured_PV/*.*",
+                "data/techno_economic_assessment/*.*]

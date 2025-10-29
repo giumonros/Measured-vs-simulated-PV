@@ -248,7 +248,7 @@ def solve_optiplant(data_units, PV_profile, H2_end_user_min_load, solver_name):
     # ------------------------- Solve the Model -------------------------
 
     # Solver
-    # solver = getSolver('HiGHS') # Solving with HiGHS should take around 180 seconds per run
+
     solver = getSolver(solver_name)  # Solving should takes around 20 seconds per run #Gurobi have to be installed on your computer with a valid license to work
 
     model_lp.solve(solver)  # Default solver (cbc)
