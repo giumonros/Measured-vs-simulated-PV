@@ -3,7 +3,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "measimren"
+name = "simeasren"
 version = "0.0.1"
 maintainers = [
   { name="Nicolas Campion", email="ncampion@protonmail.com"},

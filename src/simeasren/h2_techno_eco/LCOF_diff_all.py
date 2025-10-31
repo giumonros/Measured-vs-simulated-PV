@@ -34,29 +34,21 @@ def calculate_all_LCOF_diff(
         Minimum hydrogen end-user load (fraction of nominal load) 
         to be considered in the techno-economic model.
     solver_name : str
-        Name of the optimization solver to use (e.g., `"PULP_CBC_CMD"`, `"GUROBI_CMD"`, `"CPLEX_CMD"`).
+        Name of the optimization solver to use (e.g., "PULP_CBC_CMD", 
+        "GUROBI_CMD", "CPLEX_CMD").
     technoeco_file_name : str, optional
         Base filename (without extension) of the techno-economic data CSV file.
-        Defaults to `"Techno_eco_data_NH3"`.
+        Defaults to "Techno_eco_data_NH3".
 
     Returns
     -------
     list of dict
         A list of dictionaries, each containing:
-        
-        - `"Location"` (str): Name of the analyzed location.
-        - `"Tool"` (str): Identifier of the simulation tool or dataset.
-        - `"LCOF Difference (%)"` (float): Relative difference in LCOF between 
-          simulated and measured data.
 
-        Example element:
-        ```python
-        {
-            "Location": "Utrecht",
-            "Tool": "PG2-SARAH2",
-            "LCOF Difference (%)": -6.3
-        }
-        ```
+        - "Location" (str): Name of the analyzed location.
+        - "Tool" (str): Identifier of the simulation tool or dataset.
+        - "LCOF Difference (%)" (float): Relative difference in LCOF between 
+          simulated and measured data.
 
     Raises
     ------
@@ -70,30 +62,27 @@ def calculate_all_LCOF_diff(
     -----
     The function assumes that the `solve_optiplant()` function is available 
     in the current environment and returns:
-    `(LCOF_value, technoeco_results_df, flow_results_df)`.
+    (LCOF_value, technoeco_results_df, flow_results_df).
 
     Intermediate results (system costs and hourly flow profiles) are saved 
-    automatically under:
-    ```
-    results/{location_name}/Techno-eco assessments results/End-user flex[{H2_end_user_min_load}-1]/
-    ├── System size and costs/
-    └── Hourly profiles/
-    ```
+    automatically in the folders `System size and costs` and `Hourly profiles`
 
     Examples
     --------
-    >>> import pandas as pd
-    >>> from simeasren import calculate_all_LCOF_diff
-    >>> data = pd.read_csv("Utrecht_meas_sim.csv")
-    >>> results = calculate_all_LCOF_diff(
-    ...     data_sim_meas=data,
-    ...     location_name="Utrecht",
-    ...     H2_end_user_min_load=0.3,
-    ...     solver_name="PULP_CBC_CMD",
-    ...     technoeco_file_name="Techno_eco_data_NH3"
-    ... )
-    >>> results[0]
-    {'Location': 'Utrecht', 'Tool': 'PG2-SARAH2', 'LCOF Difference (%)': -6.3}
+    Import and run the function using a CSV with simulated and measured PV data:
+
+        >>> import pandas as pd
+        >>> from simeasren import calculate_all_LCOF_diff
+        >>> data = pd.read_csv("Utrecht_meas_sim.csv")
+        >>> results = calculate_all_LCOF_diff(
+        ...     data_sim_meas=data,
+        ...     location_name="Utrecht",
+        ...     H2_end_user_min_load=0.3,
+        ...     solver_name="PULP_CBC_CMD",
+        ...     technoeco_file_name="Techno_eco_data_NH3"
+        ... )
+        >>> results[0]
+        {'Location': 'Utrecht', 'Tool': 'PG2-SARAH2', 'LCOF Difference (%)': -6.3}
     """
 
     # -------------------- Create output directories --------------------

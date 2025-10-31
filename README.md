@@ -1,12 +1,12 @@
 # Measured-vs-simulated-PV
 
-This repository has been created based on the work presented in this article: https://doi.org/10.1016/j.rser.2024.115044
+This package has been created based on the work presented in this article: https://doi.org/10.1016/j.rser.2024.115044
 . The data used for the article are in the ``publication data`` folder. The aim of this package is to facilate the data sharing of measured PV profiles, compare measured and simulated PV power production data, and
 analyse the influence of using measured or simulated PV power data for e-fuel techno-economic assessments. 
 
 The data used to run this package are:
 - Measured data from real photovoltaic (PV) plants (``src/simeasren/data/measured_PV``)
-- Hydrogen based e-fuel techno-economic parameters (``src/simeasren/data/techno-economic_assessment``)
+- Hydrogen based e-fuel techno-economic parameters (``src/simeasren/data/techno_economic_assessment``)
 
 This package contains:
 - Functions for extracting PV power production data from PVGIS and Renewables.ninja
