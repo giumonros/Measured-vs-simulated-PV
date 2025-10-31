@@ -10,19 +10,92 @@ def calculate_all_LCOF_diff(
     solver_name,
     technoeco_file_name = "Techno_eco_data_NH3"
 ):
-    
     """
-    Function to calculate the LCOF difference between measured and simulated data for each location.
+    Calculate the difference in Levelized Cost of Fuel (LCOF) between 
+    measured and simulated data for a given location.
 
-    Args:
-    data_sim_meas (pd.DataFrame): DataFrame containing both simulated and measured data.
-    data_units (str): Filepath for the techno-economic model.
-    H2_end_user_min_load (float): Minimum load for H2 end user.
+    This function performs a techno-economic analysis by comparing the 
+    measured energy production profile with multiple simulated profiles 
+    for the specified location. For each dataset, it computes the LCOF 
+    using the `solve_optiplant` optimization model, stores detailed 
+    results and flow data as CSV files, and calculates the relative 
+    difference in LCOF between measured and simulated cases.
 
-    Returns:
-    LCOF_diff_results (list): List of dictionaries containing LCOF differences for each location and tool.
+    Parameters
+    ----------
+    data_sim_meas : pandas.DataFrame
+        DataFrame containing both simulated and measured time-series data 
+        for one or more locations. Each column name should include the 
+        location name, and the measured data column should contain "PV-MEAS".
+    location_name : str
+        Name of the location to analyze (used to filter columns in 
+        `data_sim_meas`).
+    H2_end_user_min_load : float
+        Minimum hydrogen end-user load (fraction of nominal load) 
+        to be considered in the techno-economic model.
+    solver_name : str
+        Name of the optimization solver to use (e.g., `"PULP_CBC_CMD"`, `"GUROBI_CMD"`, `"CPLEX_CMD"`).
+    technoeco_file_name : str, optional
+        Base filename (without extension) of the techno-economic data CSV file.
+        Defaults to `"Techno_eco_data_NH3"`.
+
+    Returns
+    -------
+    list of dict
+        A list of dictionaries, each containing:
+        
+        - `"Location"` (str): Name of the analyzed location.
+        - `"Tool"` (str): Identifier of the simulation tool or dataset.
+        - `"LCOF Difference (%)"` (float): Relative difference in LCOF between 
+          simulated and measured data.
+
+        Example element:
+        ```python
+        {
+            "Location": "Utrecht",
+            "Tool": "PG2-SARAH2",
+            "LCOF Difference (%)": -6.3
+        }
+        ```
+
+    Raises
+    ------
+    FileNotFoundError
+        If the specified techno-economic CSV file does not exist.
+    ValueError
+        If no measured data column (containing "PV-MEAS") is found for the 
+        given location.
+
+    Notes
+    -----
+    The function assumes that the `solve_optiplant()` function is available 
+    in the current environment and returns:
+    `(LCOF_value, technoeco_results_df, flow_results_df)`.
+
+    Intermediate results (system costs and hourly flow profiles) are saved 
+    automatically under:
+    ```
+    results/{location_name}/Techno-eco assessments results/End-user flex[{H2_end_user_min_load}-1]/
+    ├── System size and costs/
+    └── Hourly profiles/
+    ```
+
+    Examples
+    --------
+    >>> import pandas as pd
+    >>> from simeasren import calculate_all_LCOF_diff
+    >>> data = pd.read_csv("Utrecht_meas_sim.csv")
+    >>> results = calculate_all_LCOF_diff(
+    ...     data_sim_meas=data,
+    ...     location_name="Utrecht",
+    ...     H2_end_user_min_load=0.3,
+    ...     solver_name="PULP_CBC_CMD",
+    ...     technoeco_file_name="Techno_eco_data_NH3"
+    ... )
+    >>> results[0]
+    {'Location': 'Utrecht', 'Tool': 'PG2-SARAH2', 'LCOF Difference (%)': -6.3}
     """
-    
+
     # -------------------- Create output directories --------------------
     output_dir_technoeco = os.path.join("results", location_name, "Techno-eco assessments results")
     output_dir_technoeco_syst = os.path.join(output_dir_technoeco, f"End-user flex[{H2_end_user_min_load}-1]", "System size and costs")

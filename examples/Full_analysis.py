@@ -1,4 +1,6 @@
 import os
+from measimren import *
+'''
 import sys
 
 # Adjust the sys.path to include the project root directory
@@ -9,7 +11,7 @@ from measimren.utils import merge_sim_with_measured
 from measimren.plotting.plot_all import generate_LCOF_diff_plot, generate_PV_timeseries_plots, generate_high_res_PV_plots
 from measimren.plotting.prepare_pv_data import prepare_pv_data_for_plots
 from measimren.h2_techno_eco.LCOF_diff_all import calculate_all_LCOF_diff
-
+'''
 # ---------------User defined----------------
 location = "Utrecht"  # Site name for the analysis (must be existing in the "measured data folder")
 year = "2017"  # Select a specific year for the analysis

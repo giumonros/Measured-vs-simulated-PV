@@ -3,18 +3,48 @@ import pandas as pd
 
 def load_pv_setup_from_meas_file(location_name: str) -> dict:
     """
-    Load PV plant setup data from the Excel file and return as a dictionary of parameters.
+    Load PV plant setup parameters from the measured data Excel file (in data/measured_PV)
+
+    This function reads the `"PV_plant_setup"` sheet from the measured PV data Excel
+    file for a given location and returns the contents as a dictionary, with the
+    Excel sheet's `"Parameter"` column as keys and the `"Value"` column as values.
 
     Parameters
     ----------
     location_name : str
-        Name of the location (without extension, e.g., "Turin").
+        Name of the location/site corresponding to the Excel file (without extension),
+        e.g., `"Turin"`. The function expects the file to exist in:
+        ```
+        data/measured_PV/{location_name}.xlsx
+        ```
 
     Returns
     -------
     dict
-        Dictionary of parameters loaded from the Excel file.
+        Dictionary containing PV plant setup parameters. Keys correspond to parameter
+        names (from the `"Parameter"` column in Excel), and values are the corresponding
+        setup values.
+
+    Raises
+    ------
+    FileNotFoundError
+        If the measured PV Excel file for the specified location does not exist.
+
+    Notes
+    -----
+    - The Excel sheet must be named `"PV_plant_setup"` with columns `"Parameter"` and `"Value"`.
+    - Typical use includes retrieving metadata such as plant capacity, inverter specs,
+      orientation, or other site-specific configuration values for plotting or modeling.
+
+    Examples
+    --------
+    >>> parameters = load_pv_setup_from_meas_file("Turin")
+    >>> parameters["Capacity_PV_MW"]
+    5.0
+    >>> parameters["Inverter_efficiency"]
+    0.96
     """
+
     # Get package root (two levels up from this file)
     package_root = Path(__file__).resolve().parent.parent
     measured_dir = package_root / "data" / "measured_PV"

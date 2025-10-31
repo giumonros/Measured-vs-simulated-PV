@@ -9,24 +9,83 @@ def download_pvgis_data(
     pv_parameters
 ):
     """
-    Download simulated PV data from PVGIS for a given location and return as dict.
+    Download simulated PV power output data from PVGIS for a specified location.
+
+    This function queries the PVGIS API for multiple databases and versions to
+    generate hourly PV power output for the given PV system parameters.
+    The resulting data are saved as CSV files in the project directory and
+    returned as a dictionary for further analysis.
 
     Parameters
     ----------
     location_name : str
-        Name of the location (used for file naming)
+        Name of the location/site (e.g., `"Almeria"`) used for file naming and
+        labeling downloaded data.
     pv_parameters : dict
-        Dictionary of PV system parameters (Latitude, Longitude, Tilt, etc.)
+        Dictionary containing PV system configuration parameters, including:
+        - `"Latitude"` : float — geographic latitude
+        - `"Longitude"` : float — geographic longitude
+        - `"Tilt"` : float — tilt angle of PV modules (degrees)
+        - `"Azimuth"` : float — azimuth of PV modules (degrees)
+        - `"Max capacity simulation"` : float — peak PV power in kW
+        - `"System loss"` : float — system losses in %
+        - `"PV technology"` : str — PV technology type (e.g., `"crystalline silicon"`)
+        - `"Building/free"` : str — mounting type (`"building"` or `"free"`)
+        - `"Start year"` : int — first year of simulation
+        - `"End year"` : int — last year of simulation
 
     Returns
     -------
-    productions : dict
-        Dictionary where keys are identifiers (e.g., 'Almeria_2020_PG3-SARAH3')
-        and values are NumPy arrays of hourly PV power output in kW.
+    dict
+        Dictionary of PVGIS simulation outputs:
+        - Keys : str — unique identifiers in the format
+          `"{location_name}{year} PG{version}-{database}"` (e.g., `"Almeria2020 PG3-SARAH3"`)
+        - Values : numpy.ndarray — hourly PV power output in kW.
+
+    Raises
+    ------
+    requests.exceptions.RequestException
+        If a network request to PVGIS fails.
+    FileNotFoundError
+        If the output directory cannot be created or written to.
+    ValueError
+        If PVGIS CSV data cannot be parsed correctly.
+
+    Notes
+    -----
+    - Output CSV files are saved to:
+      ```
+      results/{location_name}/simulated_PV/PVGIS/
+      ```
+    - PVGIS API versions used:
+        - v5_2 : `"PVGIS-SARAH"`, `"PVGIS-SARAH2"`, `"PVGIS-ERA5"`
+        - v5_3 : `"PVGIS-SARAH3"`, `"PVGIS-ERA5"`
+    - Power output in the CSV is converted from W → kW and stored in `"P_kW"` column.
+    - The function prints status messages for successful downloads and missing data.
+
+    Examples
+    --------
+    >>> from simeasren import download_pvgis_data
+    >>> pv_params = {
+    ...     "Latitude": 37.0,
+    ...     "Longitude": -2.5,
+    ...     "Tilt": 30,
+    ...     "Azimuth": 180,
+    ...     "Max capacity simulation": 1000,
+    ...     "System loss": 14,
+    ...     "PV technology": "crystalline silicon",
+    ...     "Building/free": "free",
+    ...     "Start year": 2020,
+    ...     "End year": 2020
+    ... }
+    >>> productions = download_pvgis_data("Almeria", pv_params)
+    >>> list(productions.keys())
+    ['Almeria2020 PG2-SARAH', 'Almeria2020 PG2-SARAH2', 'Almeria2020 PG2-ERA5', 'Almeria2020 PG3-SARAH3', 'Almeria2020 PG3-ERA5']
+    >>> productions['Almeria2020 PG3-SARAH3'].shape
+    (8760,)
     """
     # -------------------- Create output directory --------------------
     output_dir_simulated_pv = os.path.join("results", location_name, "simulated_PV/PVGIS")
-    print(output_dir_simulated_pv)
     os.makedirs(output_dir_simulated_pv, exist_ok=True)
 
     # PVGIS API setup

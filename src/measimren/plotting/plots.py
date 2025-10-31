@@ -566,7 +566,7 @@ def plot_LCOF_diff(LCOF_diff_results, plot_palette, location_name, year, H2_end_
     )
 
     # Customize plot
-    ax.set_ylabel("LCOF Difference (%) (measured PV vs simulated)", fontsize=20)
+    ax.set_ylabel("LCOF Difference (%)", fontsize=20)
     ax.tick_params(axis="both", labelsize=tick_font_size)
     ax.set_axisbelow(True)
     ax.grid(True, axis="y")

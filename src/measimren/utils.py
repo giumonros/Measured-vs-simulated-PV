@@ -6,8 +6,55 @@ from pathlib import Path
 
 def merge_sim_with_measured(location_name: str, *simulated_sources, output_dir="results"):
     """
-    Merge measured PV data with any number of simulation sources and save CSV.
-    Each simulated_source should be a dictionary {identifier: hourly_values}.
+    Merge measured PV data with multiple simulation sources and save as a CSV file.
+
+    This function reads measured PV data from an Excel file, combines it with any number
+    of simulated PV datasets provided as dictionaries, and saves the merged dataset
+    for further analysis or plotting. Each simulation source should be a dictionary
+    where keys are identifiers and values are hourly PV power arrays.
+
+    Parameters
+    ----------
+    location_name : str
+        Name of the location/site (e.g., `"Almeria"`) used for file paths and labeling.
+    *simulated_sources : dict
+        Variable number of dictionaries containing simulated PV outputs.
+        Each dictionary should have:
+        - Keys : str — unique identifiers (e.g., `"Almeria2023 PG2-SARAH"`)
+        - Values : numpy.ndarray — hourly PV power output in kW.
+    output_dir : str, optional
+        Root directory where the merged CSV will be saved (default is `"results"`).
+
+    Returns
+    -------
+    None
+        The function writes a CSV file to:
+        ```
+        {output_dir}/{location_name}/simulated_PV/{location_name}_meas_sim.csv
+        ```
+        and prints a completion message.
+
+    Raises
+    ------
+    FileNotFoundError
+        If the measured PV Excel file cannot be found.
+
+    Notes
+    -----
+    - Only the first 8760 rows are kept to represent one year of hourly data.
+    - Measured data is read from Excel sheets named `{location_name}{year}`.
+    - Merged CSV columns include all simulation identifiers and the measured PV data
+      labeled as `{location_name}{year} PV-MEAS`.
+
+    Examples
+    --------
+    >>> from simesren import load_pv_setup_from_meas_file, download_pvgis_data, download_rn_data, merge_sim_with_measured
+    >>> pv_parameters = load_pv_setup_from_meas_file("Almeria")
+    >>> pvgis_data = download_pvgis_data("Almeria", pv_parameters)
+    >>> rn_data = download_rn_data(location, pv_parameters, rn_token=renewablesninja_token)
+    >>> merge_sim_with_measured(location, pvgis_data, rn_data)
+
+    Simulations completed and merged with measured data for Almeria. CSV file saved in the 'results' folder
     """
     # -------------------- Create output directory --------------------
     output_dir_sim_and_meas = os.path.join(output_dir, location_name, "simulated_PV")

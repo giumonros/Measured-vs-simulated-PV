@@ -1,40 +1,36 @@
 # Measured-vs-simulated-PV
 
 This repository has been created based on the work presented in this article: https://doi.org/10.1016/j.rser.2024.115044
-. The data used for the article are in the ``data/publication`` folder. The aim of this repository is to facilate the data sharing of measured PV profiles, compare measured and simulated PV power production data, and
+. The data used for the article are in the ``publication data`` folder. The aim of this package is to facilate the data sharing of measured PV profiles, compare measured and simulated PV power production data, and
 analyse the influence of using measured or simulated PV power data for e-fuel techno-economic assessments. 
 
-This repository contains:
-- Measured data from real photovoltaic (PV) plants (``data/measured_PV``)
-- Data required for hydrogen based e-fuel techno-economic assessments (``data/techno-economic_assessment``)
-- Outputs files combining simulated and measured time series (``data``)
+The data used to run this package are:
+- Measured data from real photovoltaic (PV) plants (``src/simeasren/data/measured_PV``)
+- Hydrogen based e-fuel techno-economic parameters (``src/simeasren/data/techno-economic_assessment``)
 
-- Functions for extracting PV power production data from PVGIS and Renewables.ninja, data analysis and graphs for PV power time series, and hydrogen based fuels techno-economic assessment
-- PV power time series analysis and hydrogen systems techno-economic assessments results for measured and simulated data (``results``). Results appears once running the analysis.
+This package contains:
+- Functions for extracting PV power production data from PVGIS and Renewables.ninja
+- Data analysis tools and graphs to compare measured and simulated data
+- A simple e-fuel techno-economic assessment to study the error propagation
 
 ## Sharing PV measured data
 
-We would like to expand our study to other sites, so if you are allowed to publicly share high resolution PV power measurement data that would help us a lot!
+We would like to expand the analysis to other sites, so if you are allowed to publicly share high resolution PV power measurement data, that would help us a lot!
 
 We do not need all the data points but **the normalized hourly aggregated values**. 
 Higher resolution data can be shared but only two days are enough (one cloudy day and one sunny day).
 
 To share PV power data, please contact us at [giulia.montanari@polito.it](mailto:giulia.montanari@polito.it) or [njbca@dtu.dk](mailto:njbca@dtu.dk).
 
-## Installation guide to use the tool
+## Installation guide
 
-1- Download the "Measured-vs-simulated-PV" ZIP folder: go to the green 'Code' button on this page, and click on 'Download ZIP'. Unzip the folder. 
-You can also Fork this repository and clone it on your local machine with github (you can use [GitHub desktop](https://desktop.github.com/download/) to facilitate the process) 
+1- Download and install the code editor [VSCode](https://code.visualstudio.com/). Make sure to select the "Add to PATH" option when installing 
 
-2- Download and install the code editor [VSCode](https://code.visualstudio.com/). Make sure to select the "Add to PATH" option when installing 
+2- Download and install [Python](https://www.python.org/downloads/).
 
-3- Download and install [Python](https://www.python.org/downloads/).
+3- Add the *Python* extension in the code editor (in "Extensions marketplace" on the left sidebar)
 
-4- Add the *Python* extension in the code editor (in "Extensions marketplace" on the left sidebar)
-
-5- Open the unzipped folder "Measured-vs-simulated-PV" in VS Code: File > Open folder > "Measured-vs-simulated-PV folder"
-
-6- Open the terminal inside VS Code by clicking Terminal > New Terminal. Run the following command to create an environment ``.venv``:
+4- Open the terminal inside VS Code by clicking Terminal > New Terminal. Run the following command to create an environment ``.venv``:
 
 ``` bash
 python -m venv .venv
@@ -53,32 +49,36 @@ On Microsoft Windows, it may be required to enable the Activate.ps1 script by se
 Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
 ```
 
-8- Install the required libraries in this environment writting in the terminal:
+8- Install the package:
 
 ``` bash
-pip install -r requirements.txt
+pip install simeasren
 ```
 
-## Set-up and run the scripts
+## Run example scripts
 
-1- In VS code, open the ``FileToRun.py`` python file
+In VS code, create a new python script and copy on of the file in the `` example`` folder.
 
-2- Fill up the "User defined" informations:
-- Location: the name should match with one of the location in the ``data/measured_PV`` folder
+The ``Full_analysis.py`` example shows a simplified version of the analysis made in this publication https://doi.org/10.1016/j.rser.2024.115044 
+
+To personalize the analysis:
+
+1- Fill up the "User defined" informations:
+- Location: the name should match with one of the location in the ``src/simeasren/data/measured_PV`` folder
 - Year: Specific year to run the simulation (the year must exist in the measured data)
 - H2_end_user_min_load: for the H2 techno-economic assessment, define the flexibility of the hydrogen end-user choosing its minimal load between 0 and 1
-- Solver: selected solver for the H2 techno-economic assessment, HiGHS is free but Gurobi need to be installed on your machine with a valid license. To use others solvers, modify the ``src/H2_techno_eco/OptiPlant.py`` script [(help)](https://coin-or.github.io/pulp/guides/how_to_configure_solvers.html)
-- Renewablesninja_token: follow step 3
+- Solver: selected solver for the H2 techno-economic assessment. cbc is the default free solver. To use [Gurobi](https://www.gurobi.com/downloads/), it has to be installed on your machine with a valid license. To use others solvers, check the [PulP documentation](https://coin-or.github.io/pulp/guides/how_to_configure_solvers.html)
+- Renewablesninja_token: follow step 2
 
-3- To generate profiles with [Renewables.ninja](https://www.renewables.ninja/), you have to set up a Renewable Ninja API token:
+2- To generate profiles with [Renewables.ninja](https://www.renewables.ninja/), you have to set up a Renewable Ninja API token:
 - Visit Renewables.ninja's [registration page](https://www.renewables.ninja/register) and create an account
 - Once logged in go to your [profile page](https://www.renewables.ninja/profile) to generate your API token
 - Copy your API token 
 - In the code, paste your token in front of the rn_token variable: ``rn_token = 'your-token-here'``
 
-4- Run the FileToRun.py file clicking on the small arrow on the top right of the VS Code window (make sure that you are running with the correct environment set-up in the installation step). A result folder will be created on your local machine.
+3- Run the ``Full_analysis.py`` file clicking on the small arrow on the top right of the VS Code window (make sure that you are running with the correct environment set-up in the installation step). A result folder will be created on your local machine.
 
-More advanced techno-economic assessments can also be performed using the ["OptiPlant"](https://github.com/njbca/OptiPlant/tool) tool 
+More advanced e-fuel techno-economic assessments can also be performed using the ["OptiPlant"](https://github.com/njbca/OptiPlant/tool) tool 
 
 ## APIs Used and documentation
 This project integrates with two APIs to gather solar production data:
