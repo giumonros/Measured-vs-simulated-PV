@@ -24,26 +24,33 @@ Module Contents
    The resulting data are saved as CSV files in the project directory and
    returned as a dictionary for further analysis.
 
-   :param location_name: Name of the location/site (e.g., `"Almeria"`) used for file naming and
+   :param location_name: Name of the location/site (e.g., "Almeria") used for file naming and
                          labeling downloaded data.
    :type location_name: str
-   :param pv_parameters: Dictionary containing PV system configuration parameters, including:
-                         - `"Latitude"` : float — geographic latitude
-                         - `"Longitude"` : float — geographic longitude
-                         - `"Tilt"` : float — tilt angle of PV modules (degrees)
-                         - `"Azimuth"` : float — azimuth of PV modules (degrees)
-                         - `"Max capacity simulation"` : float — peak PV power in kW
-                         - `"System loss"` : float — system losses in %
-                         - `"PV technology"` : str — PV technology type (e.g., `"crystalline silicon"`)
-                         - `"Building/free"` : str — mounting type (`"building"` or `"free"`)
-                         - `"Start year"` : int — first year of simulation
-                         - `"End year"` : int — last year of simulation
+   :param pv_parameters: Dictionary containing PV system configuration parameters.
+
+                         **Expected keys:**
+                             - "Latitude" : float — geographic latitude
+                             - "Longitude" : float — geographic longitude
+                             - "Tilt" : float — tilt angle of PV modules (degrees)
+                             - "Azimuth" : float — azimuth of PV modules (degrees)
+                             - "Max capacity simulation" : float — peak PV power in kW
+                             - "System loss" : float — system losses in %
+                             - "PV technology" : str — PV technology type (e.g., "crystalline silicon")
+                             - "Building/free" : str — mounting type ("building" or "free")
+                             - "Start year" : int — first year of simulation
+                             - "End year" : int — last year of simulation
    :type pv_parameters: dict
 
-   :returns: Dictionary of PVGIS simulation outputs:
-             - Keys : str — unique identifiers in the format
-               `"{location_name}{year} PG{version}-{database}"` (e.g., `"Almeria2020 PG3-SARAH3"`)
-             - Values : numpy.ndarray — hourly PV power output in kW.
+   :returns: Dictionary of PVGIS simulation outputs.
+
+             **Keys**
+                 str — unique identifiers in the format
+                 ``"{location_name}{year} PG{version}-{database}"``
+                 Example: ``"Almeria2020 PG3-SARAH3"``
+
+             **Values**
+                 numpy.ndarray — hourly PV power output in kW.
    :rtype: dict
 
    :raises requests.exceptions.RequestException: If a network request to PVGIS fails.
@@ -53,13 +60,13 @@ Module Contents
    .. rubric:: Notes
 
    - Output CSV files are saved to:
-     ```
-     results/{location_name}/simulated_PV/PVGIS/
-     ```
+
+       results/{location_name}/simulated_PV/PVGIS/
+
    - PVGIS API versions used:
-       - v5_2 : `"PVGIS-SARAH"`, `"PVGIS-SARAH2"`, `"PVGIS-ERA5"`
-       - v5_3 : `"PVGIS-SARAH3"`, `"PVGIS-ERA5"`
-   - Power output in the CSV is converted from W → kW and stored in `"P_kW"` column.
+       - v5_2 : "PVGIS-SARAH", "PVGIS-SARAH2", "PVGIS-ERA5"
+       - v5_3 : "PVGIS-SARAH3", "PVGIS-ERA5"
+   - Power output in the CSV is converted from W → kW and stored in the "P_kW" column.
    - The function prints status messages for successful downloads and missing data.
 
    .. rubric:: Examples

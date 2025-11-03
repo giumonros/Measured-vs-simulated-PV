@@ -22,25 +22,26 @@ def generate_PV_timeseries_plots(data_sim_meas, location_name: str, year: str, o
     Generate photovoltaic (PV) time-series comparison plots for measured and simulated data.
 
     This function produces and saves multiple visual analyses for a given location and year:
-    - **Capacity factor time-series plot** comparing measured vs. simulated data.
-    - **Scatter comparison plot** between measured and simulated PV outputs.
-    - **Error metrics bar charts** (mean difference, MAE, RMSE).
+
+    - **Capacity factor time-series plot** comparing measured vs. simulated data.  
+    - **Scatter comparison plot** between measured and simulated PV outputs.  
+    - **Error metrics bar charts** (mean difference, MAE, RMSE).  
 
     Results are saved under a structured directory within the specified output root.
 
     Parameters
     ----------
     data_sim_meas : pandas.DataFrame
-        DataFrame containing both measured and simulated PV time-series data.
+        DataFrame containing both measured and simulated PV time-series data.  
         Each column represents a dataset (e.g., different simulation tools) and must
         include one column containing `"PV-MEAS"` for measured data.
     location_name : str
-        Name of the analyzed location (e.g., `"Turin"`, `"Almeria"`).
+        Name of the analyzed location (e.g., "Turin", "Almeria").
     year : str
         Year corresponding to the PV data (used for labeling and output directory naming).
     output_root : str, optional
-        Root directory where all plots and results will be saved.
-        Defaults to `"results"`.
+        Root directory where all plots and results will be saved.  
+        Defaults to "results".
 
     Returns
     -------
@@ -52,27 +53,28 @@ def generate_PV_timeseries_plots(data_sim_meas, location_name: str, year: str, o
     FileNotFoundError
         If required plotting functions or style configuration files are missing.
     ValueError
-        If the input DataFrame does not contain measured PV data (`"PV-MEAS"`).
+        If the input DataFrame does not contain measured PV data ("PV-MEAS").
 
     Notes
     -----
-    - Creates or overwrites output files in:
-      ```
-      {output_root}/{location_name}/Time series analysis results/
-      ```
-    - Uses the following helper functions:
-      - `capacity_factor_formatting()`
-      - `plot_capacity_factors()`
-      - `plot_scatter_comparison()`
-      - `calculate_error_metrics()`
-      - `plot_error_metrics()`
-    - Plot aesthetics (colors, linestyles, and colormaps) are managed through
-      the `style_config` module.
+    Creates or overwrites output files in::
+
+        {output_root}/{location_name}/Time series analysis results/
+
+    Uses the following helper functions:
+    - :func:`capacity_factor_formatting`
+    - :func:`plot_capacity_factors`
+    - :func:`plot_scatter_comparison`
+    - :func:`calculate_error_metrics`
+    - :func:`plot_error_metrics`
+
+    Plot aesthetics (colors, linestyles, and colormaps) are managed through
+    the ``style_config`` module.
 
     Examples
     --------
     >>> from simeasren import generate_PV_timeseries_plots
-    >>> df, _ , _ = prepare_pv_data_for_plots("Turin", "2019")
+    >>> df, _, _ = prepare_pv_data_for_plots("Turin", "2019")
     >>> generate_PV_timeseries_plots(
     ...     data_sim_meas=df,
     ...     location_name="Turin",
@@ -80,12 +82,15 @@ def generate_PV_timeseries_plots(data_sim_meas, location_name: str, year: str, o
     ... )
     PV time series plots successfully generated for Turin 2019
 
-    The following plots will be saved in:
-    `results/Turin/Time series analysis results/`
-      - Capacity factor comparison (`*_capacity_factor.png`)
-      - Scatter plot comparison (`*_scatter.png`)
-      - Error metrics summary (`*_error_metrics.png`)
+    The following plots will be saved in::
+
+        results/Turin/Time series analysis results/
+
+        - Capacity factor comparison (*_capacity_factor.png)
+        - Scatter plot comparison (*_scatter.png)
+        - Error metrics summary (*_error_metrics.png)
     """
+
 
     # -------------------- Exit function if the year is not available --------------------
     if data_sim_meas.empty:
@@ -351,12 +356,13 @@ def generate_LCOF_diff_plot(LCOF_diff_results, location_name: str, year: str, H2
     ----------
     LCOF_diff_results : list of dict
         List of dictionaries containing LCOF comparison data for each simulation tool.
+
         Each dictionary must include:
-            - `"Location"` : str — the location name
-            - `"Tool"` : str — the name of the simulation tool
-            - `"LCOF Difference (%)"` : float — percentage difference vs. measured data
+            - "Location" : str — the location name  
+            - "Tool" : str — the name of the simulation tool  
+            - "LCOF Difference (%)" : float — percentage difference vs. measured data  
     location_name : str
-        Name of the analyzed location (e.g., `"Turin"`, `"Almeria"`, `"Utrecht"`).
+        Name of the analyzed location (e.g., "Turin", "Almeria", "Utrecht").
     year : str
         Year corresponding to the techno-economic assessment (used for labeling).
     H2_end_user_min_load : float
@@ -364,7 +370,7 @@ def generate_LCOF_diff_plot(LCOF_diff_results, location_name: str, year: str, H2
         (e.g., 0.2 for 20% of full load).
     output_root : str, optional
         Root directory where all plots and assessment results are saved.
-        Defaults to `"results"`.
+        Defaults to "results".
 
     Returns
     -------
@@ -379,22 +385,22 @@ def generate_LCOF_diff_plot(LCOF_diff_results, location_name: str, year: str, H2
 
     Notes
     -----
-    - Creates or ensures existence of directories:
-      ```
-      {output_root}/{location_name}/Techno-eco assessments results/
-      └── End-user flex[{H2_end_user_min_load}-1]/
-          ├── System size and costs/
-          └── Hourly profiles/
-      ```
-    - Relies on the helper plotting function:
-      - `plot_LCOF_diff()`
-    - Uses the color palette defined in `style_config.PLOT_PALETTE`.
+    Creates or ensures the existence of the following directory structure::
+
+        {output_root}/{location_name}/Techno-eco assessments results/
+            End-user flex[{H2_end_user_min_load}-1]/
+                System size and costs/
+                Hourly profiles/
+
+    Additional details:
+    - Relies on the helper plotting function :func:`plot_LCOF_diff`.
+    - Uses the color palette defined in ``style_config.PLOT_PALETTE``.
 
     Examples
     --------
     >>> from simeasren import generate_LCOF_diff_plot
     >>> data_sim_meas, clear_sky_df, cloudy_sky_df = prepare_pv_data_for_plots("Utrecht", "2017")
-    >>> results = LCOF_diff_results = calculate_all_LCOF_diff(data_sim_meas, "Utrecht", 0, "PULP_CBC_CMD")
+    >>> results = calculate_all_LCOF_diff(data_sim_meas, "Utrecht", 0, "PULP_CBC_CMD")
     >>> generate_LCOF_diff_plot(
     ...     LCOF_diff_results=results,
     ...     location_name="Utrecht",
@@ -404,9 +410,11 @@ def generate_LCOF_diff_plot(LCOF_diff_results, location_name: str, year: str, H2
     LCOF diff plot successfully generated for Utrecht 2017
 
     The resulting figure will be saved in:
-    `results/Utrecht/Techno-eco assessments results/`
 
+        results/Utrecht/Techno-eco assessments results/
     """
+
+
 
     # -------------------- Create output directories --------------------
     output_dir_technoeco = os.path.join(output_root, location_name, "Techno-eco assessments results")

@@ -26,12 +26,16 @@ release = '0.0.1'
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
 extensions = [
+    "myst_parser",            # Markdown support 
+    "autoapi.extension",      # Automatic API docs
     "sphinx.ext.napoleon",    # Google-style or NumPy-style docstrings
     "sphinx.ext.viewcode",    # add links to source code
-    "myst_parser",            # Markdown support
-    "autoapi.extension",      # Automatic API docs
+    "sphinx_copybutton",      
 ]
 
+myst_enable_extensions = [
+    "colon_fence",           # Allows ``` fenced code blocks
+]
 
 # -------------------- AutoAPI settings --------------------
 autoapi_type = "python"
@@ -41,11 +45,14 @@ autoapi_add_toctree_entry = True
 autoapi_keep_files = True   # keeps intermediate files
 autoapi_member_order = "bysource"
 
+napoleon_google_docstring = False
+napoleon_numpy_docstring = True
+
 # Paths that contain templates
 templates_path = ["_templates"]
 
 # List of patterns to ignore
-exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
+exclude_patterns = ["_build", "Thumbs.db", ".DS_Store", ".docenv"]
 
 
 # -- Options for HTML output -------------------------------------------------

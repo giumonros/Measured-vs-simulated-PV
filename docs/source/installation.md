@@ -8,12 +8,12 @@
 
 4- Open the terminal inside VS Code by clicking Terminal > New Terminal. Run the following command to create an environment ``.venv``:
 
-``` bash
+```bash
 python -m venv .venv
 ```
-7- Activate the environment writting in the terminal
+5- Activate the environment writting in the terminal
 
-``` bash
+```bash
 .venv\Scripts\Activate.ps1
 ```
 
@@ -21,12 +21,12 @@ python -m venv .venv
 
 On Microsoft Windows, it may be required to enable the Activate.ps1 script by setting the execution policy for the user. You can do this by issuing the following PowerShell command:
 
-``` bash
+```bash
 Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
 ```
 
-8- Install the package:
+6- Install the package:
 
-``` bash
+```bash
 pip install simeasren
 ```

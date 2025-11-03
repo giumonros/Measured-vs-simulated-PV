@@ -65,14 +65,14 @@ def solve_optiplant(data_units, PV_profile, H2_end_user_min_load, solver_name):
         - `df_flows` (`pandas.DataFrame`): Detailed time-series of unit flows, power consumption,
           and electricity use.
 
-        Example:
-        ```python
-        (
-            875.3,                            # Fuel cost (EUR/t)
-            <DataFrame: techno-economic summary>,
-            <DataFrame: hourly flow results>
-        )
-        ```
+    Example:
+        .. code-block:: python
+
+            (
+                875.3,                            # Fuel cost (EUR/t)
+                <DataFrame: techno-economic summary>,
+                <DataFrame: hourly flow results>
+            )
 
     Raises
     ------

@@ -62,23 +62,22 @@ Module Contents
                        - `"PULP_CBC_CMD"` (open-source)
    :type solver_name: str
 
-   :returns: A tuple `(fuel_cost, df_results, df_flows)` where:
+   :returns: * *tuple* -- A tuple `(fuel_cost, df_results, df_flows)` where:
 
-             - `fuel_cost` (`float`): Production cost of the main fuel (EUR/t).
-             - `df_results` (`pandas.DataFrame`): Summary of techno-economic results for each unit,
-               including investment, O&M costs, production, capacity, and cost breakdowns.
-             - `df_flows` (`pandas.DataFrame`): Detailed time-series of unit flows, power consumption,
-               and electricity use.
+               - `fuel_cost` (`float`): Production cost of the main fuel (EUR/t).
+               - `df_results` (`pandas.DataFrame`): Summary of techno-economic results for each unit,
+                 including investment, O&M costs, production, capacity, and cost breakdowns.
+               - `df_flows` (`pandas.DataFrame`): Detailed time-series of unit flows, power consumption,
+                 and electricity use.
+             * *Example* --
 
-             Example:
-             ```python
-             (
-                 875.3,                            # Fuel cost (EUR/t)
-                 <DataFrame: techno-economic summary>,
-                 <DataFrame: hourly flow results>
-             )
-             ```
-   :rtype: tuple
+               .. code-block:: python
+
+                   (
+                       875.3,                            # Fuel cost (EUR/t)
+                       <DataFrame: techno-economic summary>,
+                       <DataFrame: hourly flow results>
+                   )
 
    :raises ValueError: If required columns are missing from `data_units`, or if the optimization
        produces no results.
