@@ -88,9 +88,7 @@ def prepare_pv_data_for_plots(location_name: str, year: str):
     ...     year="2023"
     ... )
     >>> data_sim_meas.shape
-    (8760, 5)
-    >>> clear_sky_df.columns[:3]
-    Index(['Hour of the year', 'PV-MEAS', 'PV-SIM'], dtype='object')
+    (8760, 3)
     """
 
     # -------------------- Load data files --------------------

@@ -58,11 +58,12 @@ Package Contents
 
    .. rubric:: Examples
 
-   >>> parameters = load_pv_setup_from_meas_file("Turin")
-   >>> parameters["Capacity_PV_MW"]
-   5.0
-   >>> parameters["Inverter_efficiency"]
-   0.96
+   >>> from simeasren import load_pv_setup_from_meas_file
+   >>> parameters = load_pv_setup_from_meas_file("Almeria")
+   >>> parameters["System loss"]
+   9.75
+   >>> parameters["PV technology"]
+   'crystSi'
 
 
 .. py:function:: download_pvgis_data(location_name: str, pv_parameters)
@@ -213,10 +214,6 @@ Package Contents
    ...     "Tracking": 0
    ... }
    >>> rn_token = "YOUR_RN_API_TOKEN"
-   >>> productions = download_rn_data("Almeria", pv_params, rn_token)
-   >>> list(productions.keys())
-   ['Almeria2020 RN-MERRA2', 'Almeria2020 RN-SARAH']
-   >>> productions['Almeria2020 RN-MERRA2'].shape
-   (8760,)
+   >>> rn_data = download_rn_data("Almeria", pv_params, rn_token)
 
 

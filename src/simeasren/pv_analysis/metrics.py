@@ -56,18 +56,14 @@ def calculate_error_metrics(
 
     Examples
     --------
-    >>> from simeasren import calculate_error_metrics
-    >>> df = pd.read_csv("Turin_meas_sim.csv")
+    >>> from simeasren import calculate_error_metrics, prepare_pv_data_for_plots
+    >>> data_sim_meas, _, _ = prepare_pv_data_for_plots("Turin", "2019")
     >>> mean_diff, mae, rmse = calculate_error_metrics(
-    ...     data_sim_meas=df,
+    ...     data_sim_meas=data_sim_meas,
     ...     location_name="Turin"
     ... )
     >>> mean_diff[0]
-    {'Location': 'Turin', 'Tool': 'PV-SIM1', 'Mean Difference (%)': 2.34}
-    >>> mae[0]
-    {'Location': 'Turin', 'Tool': 'PV-SIM1', 'MAE (%)': 3.12}
-    >>> rmse[0]
-    {'Location': 'Turin', 'Tool': 'PV-SIM1', 'RMSE (%)': 4.05}
+    {'Location': 'Turin', 'Tool': 'PG2-SARAH2', 'Mean Difference (%)': np.float64(1.1827557468101797)}
     """
 
     mean_diff_results = []

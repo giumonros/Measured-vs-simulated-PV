@@ -30,6 +30,7 @@ Functions
    simeasren.generate_LCOF_diff_plot
    simeasren.generate_PV_timeseries_plots
    simeasren.generate_high_res_PV_plots
+   simeasren.generate_PV_plots
    simeasren.prepare_pv_data_for_plots
    simeasren.calculate_all_LCOF_diff
    simeasren.solve_optiplant
@@ -68,11 +69,12 @@ Package Contents
 
    .. rubric:: Examples
 
-   >>> parameters = load_pv_setup_from_meas_file("Turin")
-   >>> parameters["Capacity_PV_MW"]
-   5.0
-   >>> parameters["Inverter_efficiency"]
-   0.96
+   >>> from simeasren import load_pv_setup_from_meas_file
+   >>> parameters = load_pv_setup_from_meas_file("Almeria")
+   >>> parameters["System loss"]
+   9.75
+   >>> parameters["PV technology"]
+   'crystSi'
 
 
 .. py:function:: download_pvgis_data(location_name: str, pv_parameters)
@@ -223,11 +225,7 @@ Package Contents
    ...     "Tracking": 0
    ... }
    >>> rn_token = "YOUR_RN_API_TOKEN"
-   >>> productions = download_rn_data("Almeria", pv_params, rn_token)
-   >>> list(productions.keys())
-   ['Almeria2020 RN-MERRA2', 'Almeria2020 RN-SARAH']
-   >>> productions['Almeria2020 RN-MERRA2'].shape
-   (8760,)
+   >>> rn_data = download_rn_data("Almeria", pv_params, rn_token)
 
 
 .. py:function:: calculate_error_metrics(data_sim_meas, location_name, plot_palette=None, exclude_non_palette=True)
@@ -273,18 +271,14 @@ Package Contents
 
    .. rubric:: Examples
 
-   >>> from simeasren import calculate_error_metrics
-   >>> df = pd.read_csv("Turin_meas_sim.csv")
+   >>> from simeasren import calculate_error_metrics, prepare_pv_data_for_plots
+   >>> data_sim_meas, _, _ = prepare_pv_data_for_plots("Turin", "2019")
    >>> mean_diff, mae, rmse = calculate_error_metrics(
-   ...     data_sim_meas=df,
+   ...     data_sim_meas=data_sim_meas,
    ...     location_name="Turin"
    ... )
    >>> mean_diff[0]
-   {'Location': 'Turin', 'Tool': 'PV-SIM1', 'Mean Difference (%)': 2.34}
-   >>> mae[0]
-   {'Location': 'Turin', 'Tool': 'PV-SIM1', 'MAE (%)': 3.12}
-   >>> rmse[0]
-   {'Location': 'Turin', 'Tool': 'PV-SIM1', 'RMSE (%)': 4.05}
+   {'Location': 'Turin', 'Tool': 'PG2-SARAH2', 'Mean Difference (%)': np.float64(1.1827557468101797)}
 
 
 .. py:function:: merge_sim_with_measured(location_name: str, *simulated_sources, output_dir='results')
@@ -324,7 +318,7 @@ Package Contents
 
    .. rubric:: Examples
 
-   >>> from simesren import load_pv_setup_from_meas_file, download_pvgis_data, download_rn_data, merge_sim_with_measured
+   >>> from simeasren import load_pv_setup_from_meas_file, download_pvgis_data, download_rn_data, merge_sim_with_measured
    >>> pv_parameters = load_pv_setup_from_meas_file("Almeria")
    >>> pvgis_data = download_pvgis_data("Almeria", pv_parameters)
    >>> rn_data = download_rn_data(location, pv_parameters, rn_token=renewablesninja_token)
@@ -382,20 +376,21 @@ Package Contents
 
    .. rubric:: Examples
 
-   >>> from simeasren import generate_LCOF_diff_plot
+   >>> from simeasren import generate_LCOF_diff_plot, prepare_pv_data_for_plots, calculate_all_LCOF_diff
    >>> data_sim_meas, clear_sky_df, cloudy_sky_df = prepare_pv_data_for_plots("Utrecht", "2017")
-   >>> results = calculate_all_LCOF_diff(data_sim_meas, "Utrecht", 0, "PULP_CBC_CMD")
+   >>> results = calculate_all_LCOF_diff(data_sim_meas, "Utrecht", 0, "GUROBI_CMD")
+   Fuel cost: 1518.0033140603043 EUR/t
+   Fuel cost: 1422.2281035151118 EUR/t
+   Fuel cost: 1315.902904806376 EUR/t
+   Fuel cost: 1441.4028983580704 EUR/t
+   Fuel cost: 1320.3851528711755 EUR/t
    >>> generate_LCOF_diff_plot(
    ...     LCOF_diff_results=results,
    ...     location_name="Utrecht",
    ...     year="2017",
    ...     H2_end_user_min_load=0
    ... )
-   LCOF diff plot successfully generated for Utrecht 2017
-
-   The resulting figure will be saved in:
-
-       results/Utrecht/Techno-eco assessments results/
+   LCOF difference figure successfully generated in the 'results/Utrecht/Techno-eco assessments results" folder for Utrecht'
 
 
 .. py:function:: generate_PV_timeseries_plots(data_sim_meas, location_name: str, year: str, output_root: str = 'results')
@@ -446,14 +441,16 @@ Package Contents
 
    .. rubric:: Examples
 
-   >>> from simeasren import generate_PV_timeseries_plots
+   >>> from simeasren import generate_PV_timeseries_plots, prepare_pv_data_for_plots
    >>> df, _, _ = prepare_pv_data_for_plots("Turin", "2019")
    >>> generate_PV_timeseries_plots(
    ...     data_sim_meas=df,
    ...     location_name="Turin",
    ...     year="2019"
    ... )
-   PV time series plots successfully generated for Turin 2019
+   Capacity factors figure successfully saved at 'results\Turin\Time series analysis results\Turin2019_Capacity_Factors.png'
+   Scatter plot figure successfully saved at 'results\Turin\Time series analysis results\Turin2019_scatterplot.png'
+   Combined error analysis figure successfully saved at 'results\Turin\Time series analysis results\Turin2019_Errors_Analysis.png'
 
    The following plots will be saved in::
 
@@ -508,19 +505,78 @@ Package Contents
 
    .. rubric:: Examples
 
-   >>> from simeasren import generate_high_res_PV_plots
+   >>> from simeasren import generate_high_res_PV_plots, prepare_pv_data_for_plots
    >>> data_sim_meas, clear_sky_df, cloudy_sky_df = prepare_pv_data_for_plots("Almeria", "2023")
    >>> generate_high_res_PV_plots(
-   ...     clear_sky_df=clear_df,
-   ...     cloudy_sky_df=cloudy_df,
+   ...     clear_sky_df=clear_sky_df,
+   ...     cloudy_sky_df=cloudy_sky_df,
    ...     location_name="Almeria",
-   ...     year="2023",
-   ...     output_root="results"
+   ...     year="2023"
    ... )
-    High-resolution PV plots successfully generated for Almeria 2023
+   High-resolution PV plot saved at 'results\Almeria\Time series analysis results\Almeria_highres_clear_vs_cloudy.png'
 
-   The resulting figures will be saved in:
-   `results/Almeria/Time series analysis results/Almeria_highres_clear_vs_cloudy`
+
+.. py:function:: generate_PV_plots(data_sim_meas, clear_sky_df, cloudy_sky_df, location_name: str, year: str, output_root: str = 'results')
+
+   Generate all photovoltaic (PV) plots for a given location and year.
+
+   This wrapper function coordinates the generation of both:
+     1. **Time-series PV plots** — including capacity factors, scatter comparisons,
+        and error metrics.
+     2. **High-resolution PV plots** — for clear-sky and cloudy-sky conditions.
+
+   It ensures all visualization outputs for the specified site and year are
+   consistently formatted, saved in the correct directory structure, and
+   produced with a single function call.
+
+   :param data_sim_meas: DataFrame containing measured and simulated PV time-series data.
+                         Must include a `"PV-MEAS"` column representing measured data.
+   :type data_sim_meas: pandas.DataFrame
+   :param clear_sky_df: High-resolution PV data under clear-sky conditions.
+   :type clear_sky_df: pandas.DataFrame
+   :param cloudy_sky_df: High-resolution PV data under cloudy-sky conditions.
+   :type cloudy_sky_df: pandas.DataFrame
+   :param location_name: Name of the analyzed location (e.g., `"Turin"`, `"Utrecht"`).
+   :type location_name: str
+   :param year: Year corresponding to the PV data (used for labeling and output directories).
+   :type year: str
+   :param output_root: Root directory where all plots and results will be saved.
+                       Defaults to `"results"`.
+   :type output_root: str, optional
+
+   :returns: This function does not return any objects. It calls subfunctions that
+             generate and save plots to disk.
+   :rtype: None
+
+   :raises ValueError: If `data_sim_meas` is empty or lacks required columns.
+
+   .. rubric:: Notes
+
+   - Output files are saved to:
+     ```
+     {output_root}/{location_name}/Time series analysis results/
+     ```
+   - If `data_sim_meas` is empty, the function exits without generating plots.
+
+   .. rubric:: Examples
+
+   >>> from simeasren import generate_PV_plots, prepare_pv_data_for_plots
+   >>> data_sim_meas, clear_sky_df, cloudy_sky_df = prepare_pv_data_for_plots("Almeria", "2023")
+   >>> generate_PV_plots(
+   ...     data_sim_meas=data_sim_meas,
+   ...     clear_sky_df=clear_sky_df,
+   ...     cloudy_sky_df=cloudy_sky_df,
+   ...     location_name="Almeria",
+   ...     year="2023"
+   ... )
+   Capacity factors figure successfully saved at 'results\Almeria\Time series analysis results\Almeria2023_Capacity_Factors.png'
+   Scatter plot figure successfully saved at 'results\Almeria\Time series analysis results\Almeria2023_scatterplot.png'
+   Combined error analysis figure successfully saved at 'results\Almeria\Time series analysis results\Almeria2023_Errors_Analysis.png'
+   High-resolution PV plot saved at 'results\Almeria\Time series analysis results\Almeria_highres_clear_vs_cloudy.png'
+
+   The generated plots will include:
+     - Time-series comparisons (capacity factor, scatter, error metrics)
+     - High-resolution plots for clear and cloudy conditions
 
 
 .. py:function:: prepare_pv_data_for_plots(location_name: str, year: str)
@@ -573,9 +629,7 @@ Package Contents
    ...     year="2023"
    ... )
    >>> data_sim_meas.shape
-   (8760, 5)
-   >>> clear_sky_df.columns[:3]
-   Index(['Hour of the year', 'PV-MEAS', 'PV-SIM'], dtype='object')
+   (8760, 3)
 
 
 .. py:function:: calculate_all_LCOF_diff(data_sim_meas, location_name, H2_end_user_min_load, solver_name, technoeco_file_name='Techno_eco_data_NH3')
@@ -632,14 +686,13 @@ Package Contents
 
    Import and run the function using a CSV with simulated and measured PV data:
 
-       >>> import pandas as pd
-       >>> from simeasren import calculate_all_LCOF_diff
-       >>> data = pd.read_csv("Utrecht_meas_sim.csv")
+       >>> from simeasren import calculate_all_LCOF_diff, prepare_pv_data_for_plots
+       >>> data_sim_meas, _, _ = prepare_pv_data_for_plots("Utrecht", "2017")
        >>> results = calculate_all_LCOF_diff(
-       ...     data_sim_meas=data,
+       ...     data_sim_meas=data_sim_meas,
        ...     location_name="Utrecht",
        ...     H2_end_user_min_load=0.3,
-       ...     solver_name="PULP_CBC_CMD",
+       ...     solver_name="GUROBI_CMD",
        ...     technoeco_file_name="Techno_eco_data_NH3"
        ... )
        >>> results[0]

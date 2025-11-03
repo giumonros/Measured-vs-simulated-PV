@@ -422,7 +422,7 @@ def plot_high_res_days(df_clear, df_cloudy, location_name, legend_names_high_res
     output_file = os.path.join(output_dir_timeseries, f"{location_name}_highres_clear_vs_cloudy.png")
     plt.savefig(output_file, bbox_inches="tight")
     plt.close()
-    print(f"High-resolution clear vs cloudy sky figure saved at '{output_file}'")
+    print(f"High-resolution PV plot saved at '{output_file}'")
 
 # Formatting
 def highres_plot_formatting(

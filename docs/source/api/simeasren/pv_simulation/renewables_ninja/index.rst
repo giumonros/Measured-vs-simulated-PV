@@ -87,10 +87,6 @@ Module Contents
    ...     "Tracking": 0
    ... }
    >>> rn_token = "YOUR_RN_API_TOKEN"
-   >>> productions = download_rn_data("Almeria", pv_params, rn_token)
-   >>> list(productions.keys())
-   ['Almeria2020 RN-MERRA2', 'Almeria2020 RN-SARAH']
-   >>> productions['Almeria2020 RN-MERRA2'].shape
-   (8760,)
+   >>> rn_data = download_rn_data("Almeria", pv_params, rn_token)
 
 

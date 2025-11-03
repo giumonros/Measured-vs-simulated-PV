@@ -73,15 +73,17 @@ def generate_PV_timeseries_plots(data_sim_meas, location_name: str, year: str, o
 
     Examples
     --------
-    >>> from simeasren import generate_PV_timeseries_plots
+    >>> from simeasren import generate_PV_timeseries_plots, prepare_pv_data_for_plots
     >>> df, _, _ = prepare_pv_data_for_plots("Turin", "2019")
     >>> generate_PV_timeseries_plots(
     ...     data_sim_meas=df,
     ...     location_name="Turin",
     ...     year="2019"
     ... )
-    PV time series plots successfully generated for Turin 2019
-
+    Capacity factors figure successfully saved at 'results\Turin\Time series analysis results\Turin2019_Capacity_Factors.png'
+    Scatter plot figure successfully saved at 'results\Turin\Time series analysis results\Turin2019_scatterplot.png'   
+    Combined error analysis figure successfully saved at 'results\Turin\Time series analysis results\Turin2019_Errors_Analysis.png'
+    
     The following plots will be saved in::
 
         results/Turin/Time series analysis results/
@@ -149,8 +151,6 @@ def generate_PV_timeseries_plots(data_sim_meas, location_name: str, year: str, o
         output_dir_timeseries=output_dir_timeseries,
     )
 
-    print(f"PV time series plots successfully generated for {location_name} {year}")
-
 
 # ---------------------------------------------------------------------------
 # 2. High-resolution PV plots (clear & cloudy days)
@@ -207,19 +207,15 @@ def generate_high_res_PV_plots(clear_sky_df, cloudy_sky_df, location_name: str, 
 
     Examples
     --------
-    >>> from simeasren import generate_high_res_PV_plots
+    >>> from simeasren import generate_high_res_PV_plots, prepare_pv_data_for_plots
     >>> data_sim_meas, clear_sky_df, cloudy_sky_df = prepare_pv_data_for_plots("Almeria", "2023")
     >>> generate_high_res_PV_plots(
-    ...     clear_sky_df=clear_df,
-    ...     cloudy_sky_df=cloudy_df,
+    ...     clear_sky_df=clear_sky_df,
+    ...     cloudy_sky_df=cloudy_sky_df,
     ...     location_name="Almeria",
-    ...     year="2023",
-    ...     output_root="results"
+    ...     year="2023"
     ... )
-     High-resolution PV plots successfully generated for Almeria 2023
-
-    The resulting figures will be saved in:
-    `results/Almeria/Time series analysis results/Almeria_highres_clear_vs_cloudy`
+    High-resolution PV plot saved at 'results\Almeria\Time series analysis results\Almeria_highres_clear_vs_cloudy.png'
 
     """
     # -------------------- Create output directory --------------------
@@ -252,8 +248,6 @@ def generate_high_res_PV_plots(clear_sky_df, cloudy_sky_df, location_name: str, 
         line_widths_high_res=line_widths_high_res,
         output_dir_timeseries=output_dir_timeseries,
     )
-
-    print(f" High-resolution PV plots successfully generated for {location_name} {year}")
 
 
 # ---------------------------------------------------------------------------
@@ -311,7 +305,7 @@ def generate_PV_plots(data_sim_meas, clear_sky_df, cloudy_sky_df, location_name:
 
     Examples
     --------
-    >>> from simeasren import generate_PV_plots
+    >>> from simeasren import generate_PV_plots, prepare_pv_data_for_plots
     >>> data_sim_meas, clear_sky_df, cloudy_sky_df = prepare_pv_data_for_plots("Almeria", "2023")
     >>> generate_PV_plots(
     ...     data_sim_meas=data_sim_meas,
@@ -320,7 +314,10 @@ def generate_PV_plots(data_sim_meas, clear_sky_df, cloudy_sky_df, location_name:
     ...     location_name="Almeria",
     ...     year="2023"
     ... )
-     All PV plots successfully generated for Almeria 2023
+    Capacity factors figure successfully saved at 'results\Almeria\Time series analysis results\Almeria2023_Capacity_Factors.png'
+    Scatter plot figure successfully saved at 'results\Almeria\Time series analysis results\Almeria2023_scatterplot.png'
+    Combined error analysis figure successfully saved at 'results\Almeria\Time series analysis results\Almeria2023_Errors_Analysis.png'
+    High-resolution PV plot saved at 'results\Almeria\Time series analysis results\Almeria_highres_clear_vs_cloudy.png'
 
     The generated plots will include:
       - Time-series comparisons (capacity factor, scatter, error metrics)
@@ -333,8 +330,6 @@ def generate_PV_plots(data_sim_meas, clear_sky_df, cloudy_sky_df, location_name:
 
     generate_PV_timeseries_plots(data_sim_meas, location_name, year, output_root)
     generate_high_res_PV_plots(clear_sky_df, cloudy_sky_df, location_name, year, output_root)
-
-    print(f" All PV plots successfully generated for {location_name} {year}")
 
 
 # ---------------------------------------------------------------------------
@@ -398,24 +393,22 @@ def generate_LCOF_diff_plot(LCOF_diff_results, location_name: str, year: str, H2
 
     Examples
     --------
-    >>> from simeasren import generate_LCOF_diff_plot
+    >>> from simeasren import generate_LCOF_diff_plot, prepare_pv_data_for_plots, calculate_all_LCOF_diff
     >>> data_sim_meas, clear_sky_df, cloudy_sky_df = prepare_pv_data_for_plots("Utrecht", "2017")
-    >>> results = calculate_all_LCOF_diff(data_sim_meas, "Utrecht", 0, "PULP_CBC_CMD")
+    >>> results = calculate_all_LCOF_diff(data_sim_meas, "Utrecht", 0, "GUROBI_CMD")
+    Fuel cost: 1518.0033140603043 EUR/t
+    Fuel cost: 1422.2281035151118 EUR/t
+    Fuel cost: 1315.902904806376 EUR/t
+    Fuel cost: 1441.4028983580704 EUR/t
+    Fuel cost: 1320.3851528711755 EUR/t
     >>> generate_LCOF_diff_plot(
     ...     LCOF_diff_results=results,
     ...     location_name="Utrecht",
     ...     year="2017",
     ...     H2_end_user_min_load=0
     ... )
-    LCOF diff plot successfully generated for Utrecht 2017
-
-    The resulting figure will be saved in:
-
-        results/Utrecht/Techno-eco assessments results/
+    LCOF difference figure successfully generated in the 'results/Utrecht/Techno-eco assessments results" folder for Utrecht'
     """
-
-
-
     # -------------------- Create output directories --------------------
     output_dir_technoeco = os.path.join(output_root, location_name, "Techno-eco assessments results")
     output_dir_technoeco_syst = os.path.join(output_dir_technoeco, f"End-user flex[{H2_end_user_min_load}-1]", "System size and costs")
@@ -438,6 +431,4 @@ def generate_LCOF_diff_plot(LCOF_diff_results, location_name: str, year: str, H2
         plot_palette=style_config.PLOT_PALETTE,
         output_dir_technoeco=output_dir_technoeco
     )
-
-    print(f"LCOF diff plot successfully generated for {location_name} {year}")
 

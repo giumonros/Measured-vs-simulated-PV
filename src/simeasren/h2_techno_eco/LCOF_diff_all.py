@@ -71,14 +71,13 @@ def calculate_all_LCOF_diff(
     --------
     Import and run the function using a CSV with simulated and measured PV data:
 
-        >>> import pandas as pd
-        >>> from simeasren import calculate_all_LCOF_diff
-        >>> data = pd.read_csv("Utrecht_meas_sim.csv")
+        >>> from simeasren import calculate_all_LCOF_diff, prepare_pv_data_for_plots
+        >>> data_sim_meas, _, _ = prepare_pv_data_for_plots("Utrecht", "2017")
         >>> results = calculate_all_LCOF_diff(
-        ...     data_sim_meas=data,
+        ...     data_sim_meas=data_sim_meas,
         ...     location_name="Utrecht",
         ...     H2_end_user_min_load=0.3,
-        ...     solver_name="PULP_CBC_CMD",
+        ...     solver_name="GUROBI_CMD",
         ...     technoeco_file_name="Techno_eco_data_NH3"
         ... )
         >>> results[0]

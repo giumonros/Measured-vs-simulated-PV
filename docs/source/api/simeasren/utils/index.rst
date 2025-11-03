@@ -52,7 +52,7 @@ Module Contents
 
    .. rubric:: Examples
 
-   >>> from simesren import load_pv_setup_from_meas_file, download_pvgis_data, download_rn_data, merge_sim_with_measured
+   >>> from simeasren import load_pv_setup_from_meas_file, download_pvgis_data, download_rn_data, merge_sim_with_measured
    >>> pv_parameters = load_pv_setup_from_meas_file("Almeria")
    >>> pvgis_data = download_pvgis_data("Almeria", pv_parameters)
    >>> rn_data = download_rn_data(location, pv_parameters, rn_token=renewablesninja_token)

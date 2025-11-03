@@ -38,11 +38,12 @@ def load_pv_setup_from_meas_file(location_name: str) -> dict:
 
     Examples
     --------
-    >>> parameters = load_pv_setup_from_meas_file("Turin")
-    >>> parameters["Capacity_PV_MW"]
-    5.0
-    >>> parameters["Inverter_efficiency"]
-    0.96
+    >>> from simeasren import load_pv_setup_from_meas_file
+    >>> parameters = load_pv_setup_from_meas_file("Almeria")
+    >>> parameters["System loss"]
+    9.75
+    >>> parameters["PV technology"]
+    'crystSi'
     """
 
     # Get package root (two levels up from this file)
