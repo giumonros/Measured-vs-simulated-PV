@@ -1,6 +1,8 @@
 # Measured PV data
 
-For now, the measured pv data are collected manually using high quality measurements from universities. More details can be found in [this publication](https://www.sciencedirect.com/science/article/pii/S1364032124007706).
+For now, the measured pv data are collected manually using high quality measurements from universities. The normalized hourly timeseries and high resolution data for some specific days are stored in an excel format in this [folder](https://github.com/giumonros/Measured-vs-simulated-PV/tree/main/src/simeasren/data/measured_PV)
+
+More details can be found in [this publication](https://www.sciencedirect.com/science/article/pii/S1364032124007706).
 
 ## Contribute
 To contribute and provide additional shareable data please contact please contact us at [giulia.montanari@polito.it](mailto:giulia.montanari@polito.it) or [njbca@dtu.dk](mailto:njbca@dtu.dk).
@@ -45,8 +47,4 @@ The characteristics of the sites currently available are described in the follow
 ᵈ Estimated.  
 ᵉ Multiple inverters.  
 ᶠ Bifacial PV panels.
-
-The normalized hourly timeseries and high resolution data for some specific days are stored in an excel format in this [folder](https://github.com/giumonros/Measured-vs-simulated-PV/tree/main/src/simeasren/data/measured_PV)
-
-
 
