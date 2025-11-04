@@ -1,9 +1,9 @@
 # Measured-vs-simulated-PV
 
+**The complete package documentation is available [online](https://measured-vs-simulated-pv.readthedocs.io/en/latest/)** 
+
 This package has been created based on the work presented in this article: https://doi.org/10.1016/j.rser.2024.115044 The data used for the article are in the ``publication data`` folder. The aim of this package is to facilate the data sharing of measured PV profiles, compare measured and simulated PV power production data, and
 analyse the influence of using measured or simulated PV power data for e-fuel techno-economic assessments. 
-
-The complete package documentation is available [online](https://measured-vs-simulated-pv.readthedocs.io/en/latest/)
 
 The data used to run this package are:
 - [Measured data](https://github.com/giumonros/Measured-vs-simulated-PV/tree/main/src/simeasren/data/measured_PV) from real photovoltaic (PV) plants
