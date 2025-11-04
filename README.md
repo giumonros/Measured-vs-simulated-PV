@@ -1,17 +1,18 @@
 # Measured-vs-simulated-PV
 
-This package has been created based on the work presented in this article: https://doi.org/10.1016/j.rser.2024.115044
-. The data used for the article are in the ``publication data`` folder. The aim of this package is to facilate the data sharing of measured PV profiles, compare measured and simulated PV power production data, and
+This package has been created based on the work presented in this article: https://doi.org/10.1016/j.rser.2024.115044 The data used for the article are in the ``publication data`` folder. The aim of this package is to facilate the data sharing of measured PV profiles, compare measured and simulated PV power production data, and
 analyse the influence of using measured or simulated PV power data for e-fuel techno-economic assessments. 
 
+The complete package documentation is available [online](https://measured-vs-simulated-pv.readthedocs.io/en/latest/)
+
 The data used to run this package are:
-- Measured data from real photovoltaic (PV) plants (``src/simeasren/data/measured_PV``)
-- Hydrogen based e-fuel techno-economic parameters (``src/simeasren/data/techno_economic_assessment``)
+- [Measured data](https://github.com/giumonros/Measured-vs-simulated-PV/tree/main/src/simeasren/data/measured_PV) from real photovoltaic (PV) plants
+- Hydrogen based e-fuel [techno-economic parameters](https://github.com/giumonros/Measured-vs-simulated-PV/tree/main/src/simeasren/data/techno_economic_assessment)
 
 This package contains:
 - Functions for extracting PV power production data from PVGIS and Renewables.ninja
 - Data analysis tools and graphs to compare measured and simulated data
-- A simple e-fuel techno-economic assessment to study the error propagation
+- A simple e-fuel techno-economic assessment model to study the error propagation
 
 ## Sharing PV measured data
 
@@ -57,7 +58,7 @@ pip install simeasren
 
 ## Run example scripts
 
-In VS code, create a new python script and copy on of the file in the `` example`` folder.
+In VS code, create a new python script and copy on of the file in the ``example`` folder.
 
 The ``Full_analysis.py`` example shows a simplified version of the analysis made in this publication https://doi.org/10.1016/j.rser.2024.115044 
 
