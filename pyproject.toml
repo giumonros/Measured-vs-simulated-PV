@@ -42,5 +42,5 @@ Repository = "https://github.com/giumonros/Measured-vs-simulated-PV"
 Issues = "https://github.com/giumonros/Measured-vs-simulated-PV/issues"
 
 [tool.setuptools.package-data]
-"measimren" = ["data/measured_PV/*.*",
+"simeasren" = ["data/measured_PV/*.*",
                 "data/techno_economic_assessment/*.*"]
