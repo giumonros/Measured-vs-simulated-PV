@@ -1,7 +1,7 @@
 import os
 import pandas as pd
 from pathlib import Path
-from measimren.h2_techno_eco.OptiPlant import solve_optiplant
+from ..h2_techno_eco.OptiPlant import solve_optiplant
 
 def calculate_all_LCOF_diff(
     data_sim_meas,

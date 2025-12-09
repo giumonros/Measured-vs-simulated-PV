@@ -9,7 +9,7 @@ from .plots import (
     plot_LCOF_diff
 )
 from ..pv_analysis.metrics import calculate_error_metrics
-import plot_style_config as style_config
+from ..plotting import plot_style_config as style_config
 
 import os
 

@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "simeasren"
-version = "0.0.1"
+version = "0.0.3"
 maintainers = [
   { name="Nicolas Campion", email="ncampion@protonmail.com"},
   { name="Giulia Montanari"},
