@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import pandas as pd
 import numpy as np
-from measimren.plotting import plot_style_config as style_config
+import plot_style_config as style_config
 
 #------------------- Plot capacity factor duration curve -------------------------
 
