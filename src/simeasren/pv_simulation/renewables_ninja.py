@@ -8,7 +8,8 @@ import pandas as pd
 def download_rn_data(
     location_name: str,
     pv_parameters, 
-    rn_token: str
+    rn_token: str,
+    output_dir_simulated_pv: str = None
 ):
     """
     Download simulated PV power output data from Renewables.ninja for a specified location.
@@ -63,7 +64,7 @@ def download_rn_data(
 
     Notes
     -----
-    - Output CSV files are saved to:
+    - Output CSV files are saved to the specified folder or by default to:
 
         results/{location_name}/simulated_PV/Renewables_ninja/
 
@@ -95,8 +96,11 @@ def download_rn_data(
 
 
     # -------------------- Create output directory --------------------
-    output_dir_simulated_pv = os.path.join("results", location_name, "simulated_PV/Renewables_ninja")
-    os.makedirs(output_dir_simulated_pv, exist_ok=True)
+
+    # Set default output folder if not provided
+    if output_dir_simulated_pv is None:
+        output_dir_simulated_pv = os.path.join("results", location_name, "simulated_PV/Renewables_ninja")
+        os.makedirs(output_dir_simulated_pv, exist_ok=True)
 
     rn_session = requests.Session()
     rn_session.headers = {"Authorization": f"Token {rn_token}"}

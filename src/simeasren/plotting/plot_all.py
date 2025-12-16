@@ -16,7 +16,7 @@ import os
 # ---------------------------------------------------------------------------
 # 1. PV time series plots (capacity factor, scatter, error metrics)
 # ---------------------------------------------------------------------------
-def generate_PV_timeseries_plots(data_sim_meas, location_name: str, year: str, output_root: str = "results"):
+def generate_PV_timeseries_plots(data_sim_meas, location_name: str, year: str, output_dir_timeseries: str = None):
 
     """
     Generate photovoltaic (PV) time-series comparison plots for measured and simulated data.
@@ -84,7 +84,7 @@ def generate_PV_timeseries_plots(data_sim_meas, location_name: str, year: str, o
     Scatter plot figure successfully saved at 'results\Turin\Time series analysis results\Turin2019_scatterplot.png'   
     Combined error analysis figure successfully saved at 'results\Turin\Time series analysis results\Turin2019_Errors_Analysis.png'
     
-    The following plots will be saved in::
+    By default, the following plots will be saved in::
 
         results/Turin/Time series analysis results/
 
@@ -100,8 +100,11 @@ def generate_PV_timeseries_plots(data_sim_meas, location_name: str, year: str, o
         return
 
     # -------------------- Create output directory --------------------
-    output_dir_timeseries = os.path.join(output_root, location_name, "Time series analysis results")
-    os.makedirs(output_dir_timeseries, exist_ok=True)
+
+        # Set default output folder if not provided
+    if output_dir_timeseries is None:
+        output_dir_timeseries = os.path.join("results", location_name, "Time series analysis results")
+        os.makedirs(output_dir_timeseries, exist_ok=True)
 
     # -------------------- Legend names and formatting --------------------
     legend_names = sorted(set(col.split()[1] for col in data_sim_meas.columns))
@@ -155,7 +158,7 @@ def generate_PV_timeseries_plots(data_sim_meas, location_name: str, year: str, o
 # ---------------------------------------------------------------------------
 # 2. High-resolution PV plots (clear & cloudy days)
 # ---------------------------------------------------------------------------
-def generate_high_res_PV_plots(clear_sky_df, cloudy_sky_df, location_name: str, year: str, output_root: str = "results"):
+def generate_high_res_PV_plots(clear_sky_df, cloudy_sky_df, location_name: str, year: str, output_dir_timeseries: str = None):
 
     """
     Generate high-resolution photovoltaic (PV) plots for clear and cloudy sky conditions.
@@ -193,7 +196,7 @@ def generate_high_res_PV_plots(clear_sky_df, cloudy_sky_df, location_name: str, 
 
     Notes
     -----
-    - Creates or overwrites output files in:
+    - By default creates or overwrites output files in:
       ```
       {output_root}/{location_name}/Time series analysis results/
       ```
@@ -219,8 +222,9 @@ def generate_high_res_PV_plots(clear_sky_df, cloudy_sky_df, location_name: str, 
 
     """
     # -------------------- Create output directory --------------------
-    output_dir_timeseries = os.path.join(output_root, location_name, "Time series analysis results")
-    os.makedirs(output_dir_timeseries, exist_ok=True)
+    if output_dir_timeseries  is None:
+        output_dir_timeseries = os.path.join("results", location_name, "Time series analysis results")
+        os.makedirs(output_dir_timeseries, exist_ok=True)
 
     # -------------------- Legend names and formatting --------------------
     legend_names_high_res = sorted(
@@ -253,7 +257,7 @@ def generate_high_res_PV_plots(clear_sky_df, cloudy_sky_df, location_name: str, 
 # ---------------------------------------------------------------------------
 # 3 - Wrapper that calls both
 # ---------------------------------------------------------------------------
-def generate_PV_plots(data_sim_meas, clear_sky_df, cloudy_sky_df, location_name: str, year: str, output_root: str = "results"):
+def generate_PV_plots(data_sim_meas, clear_sky_df, cloudy_sky_df, location_name: str, year: str, output_dir_timeseries: str = None):
 
     """
     Generate all photovoltaic (PV) plots for a given location and year.
@@ -328,15 +332,15 @@ def generate_PV_plots(data_sim_meas, clear_sky_df, cloudy_sky_df, location_name:
         print(f"Year {year} not available for {location_name}, skipping plots.")
         return
 
-    generate_PV_timeseries_plots(data_sim_meas, location_name, year, output_root)
-    generate_high_res_PV_plots(clear_sky_df, cloudy_sky_df, location_name, year, output_root)
+    generate_PV_timeseries_plots(data_sim_meas, location_name, year, output_dir_timeseries)
+    generate_high_res_PV_plots(clear_sky_df, cloudy_sky_df, location_name, year, output_dir_timeseries)
 
 
 # ---------------------------------------------------------------------------
 # 4 - Function for LCOF difference plots
 # ---------------------------------------------------------------------------
 
-def generate_LCOF_diff_plot(LCOF_diff_results, location_name: str, year: str, H2_end_user_min_load: float, output_root: str = "results"):
+def generate_LCOF_diff_plot(LCOF_diff_results, location_name: str, year: str, H2_end_user_min_load: float, output_dir_technoeco: str = None):
 
     """
     Generate Levelized Cost of Fuel (LCOF) difference plots for a given location and year.
@@ -410,7 +414,9 @@ def generate_LCOF_diff_plot(LCOF_diff_results, location_name: str, year: str, H2
     LCOF difference figure successfully generated in the 'results/Utrecht/Techno-eco assessments results" folder for Utrecht'
     """
     # -------------------- Create output directories --------------------
-    output_dir_technoeco = os.path.join(output_root, location_name, "Techno-eco assessments results")
+    if output_dir_technoeco is None:
+        output_dir_technoeco = os.path.join("results", location_name, "Techno-eco assessments results")
+        
     output_dir_technoeco_syst = os.path.join(output_dir_technoeco, f"End-user flex[{H2_end_user_min_load}-1]", "System size and costs")
     output_dir_flows = os.path.join(output_dir_technoeco, f"End-user flex[{H2_end_user_min_load}-1]", "Hourly profiles")
     os.makedirs(output_dir_technoeco_syst, exist_ok=True)

@@ -4,7 +4,7 @@ from pathlib import Path
 
 # ---------------------------- Merge simulated with measured data in one file & Save -----------------------------
 
-def merge_sim_with_measured(location_name: str, *simulated_sources, output_dir="results"):
+def merge_sim_with_measured(location_name: str, *simulated_sources, output_dir_sim_and_meas: str = None):
     """
     Merge measured PV data with multiple simulation sources and save as a CSV file.
 
@@ -57,8 +57,10 @@ def merge_sim_with_measured(location_name: str, *simulated_sources, output_dir="
     Simulations completed and merged with measured data for Almeria. CSV file saved in the 'results' folder
     """
     # -------------------- Create output directory --------------------
-    output_dir_sim_and_meas = os.path.join(output_dir, location_name, "simulated_PV")
-    os.makedirs(output_dir_sim_and_meas, exist_ok=True)
+    # Set default output folder if not provided
+    if output_dir_sim_and_meas is None:
+        output_dir_sim_and_meas = os.path.join("results", location_name, "simulated_PV")
+        os.makedirs(output_dir_sim_and_meas, exist_ok=True)
 
     # Get package root (two levels up from this file)
     package_root = Path(__file__).resolve().parent
@@ -95,5 +97,5 @@ def merge_sim_with_measured(location_name: str, *simulated_sources, output_dir="
     out_path = os.path.join(output_dir_sim_and_meas, f"{location_name}_meas_sim.csv")
     output_df.to_csv(out_path, index=False)
 
-    print(f"Simulations completed and merged with measured data for {location_name}. CSV file saved in the '{output_dir}' folder")
+    print(f"Simulations completed and merged with measured data for {location_name}. CSV file saved in '{output_dir_sim_and_meas}'")
     return

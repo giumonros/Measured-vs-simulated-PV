@@ -6,7 +6,8 @@ import requests
 
 def download_pvgis_data(
     location_name: str,
-    pv_parameters
+    pv_parameters,
+    output_dir_simulated_pv: str = None
 ):
     """
     Download simulated PV power output data from PVGIS for a specified location.
@@ -60,7 +61,7 @@ def download_pvgis_data(
 
     Notes
     -----
-    - Output CSV files are saved to:
+    - Output CSV files are saved to the specified output folder or by default in:
 
         results/{location_name}/simulated_PV/PVGIS/
 
@@ -93,8 +94,11 @@ def download_pvgis_data(
     """
     
     # -------------------- Create output directory --------------------
-    output_dir_simulated_pv = os.path.join("results", location_name, "simulated_PV/PVGIS")
-    os.makedirs(output_dir_simulated_pv, exist_ok=True)
+
+    # Set default output folder if not provided
+    if output_dir_simulated_pv is None:
+        output_dir_simulated_pv = os.path.join("results", location_name, "simulated_PV/PVGIS")
+        os.makedirs(output_dir_simulated_pv, exist_ok=True)
 
     # PVGIS API setup
     pvgis_versions = ["v5_2", "v5_3"]

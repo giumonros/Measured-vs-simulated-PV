@@ -27,7 +27,7 @@ def extract_year_selected(dataframe: pd.DataFrame, column_pattern=r"([A-Za-z]+[0
     )
 
 
-def prepare_pv_data_for_plots(location_name: str, year: str):
+def prepare_pv_data_for_plots(location_name: str, year: str, file_path_sim_meas:str = None, file_path_pvdata:str = None):
     """
     Load, clean, and prepare all measured and simulated PV datasets
     for subsequent time series and high-resolution plotting.
@@ -72,7 +72,7 @@ def prepare_pv_data_for_plots(location_name: str, year: str):
       data/measured_PV/{location_name}.xlsx
       ```
       with sheet names `"Clear sky day"` and `"Cloudy sky day"`.
-    - Simulated PV results must exist in:
+    - By default simulated PV results are expected in:
       ```
       results/{location_name}/simulated_pv/{location_name}_meas_sim.csv
       ```
@@ -93,17 +93,22 @@ def prepare_pv_data_for_plots(location_name: str, year: str):
 
     # -------------------- Load data files --------------------
 
-    # Get package root (two levels up from this file)
-    package_root = Path(__file__).resolve().parent.parent
-    measured_dir = package_root / "data" / "measured_PV"
+    # Set default measured pv data if not provided
+    if file_path_pvdata is None:
+        # Get package root (two levels up from this file)
+        package_root = Path(__file__).resolve().parent.parent
+        measured_dir = package_root / "data" / "measured_PV"
 
-    # Build full path to the Excel file
-    file_path_pvdata  = measured_dir / f"{location_name}.xlsx"
+        # Build full path to the Excel file
+        file_path_pvdata  = measured_dir / f"{location_name}.xlsx"
 
     if not file_path_pvdata.exists():
         raise FileNotFoundError(f"Measured PV file not found: {file_path_pvdata}")
     
-    file_path_sim_meas = os.path.join("results",location_name, "simulated_pv", f"{location_name}_meas_sim.csv")
+    # Set default simulation results if not provided
+    if file_path_sim_meas is None:
+        file_path_sim_meas = os.path.join("results",location_name, "simulated_pv", f"{location_name}_meas_sim.csv")
+    
     data_sim_meas = pd.read_csv(file_path_sim_meas)
 
     clear_sky_df = pd.read_excel(file_path_pvdata, sheet_name="Clear sky day")
